@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-base: #f1f5f9;
+    --primary: #1e40af;
+    --primary-hover: #1d4ed8;
+    --accent: #ea580c;
+    --accent-hover: #c2410c;
+
+    /* Status & Badges colors */
+    --badge-green: #16a34a;
+    --badge-blue: #0284c7;
+    --badge-amber: #d97706;
+    --badge-purple: #7e22ce;
+    --badge-red: #dc2626;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: #0f172a;
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+  }
+}

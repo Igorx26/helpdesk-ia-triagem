@@ -1,0 +1,10 @@
+# Configurações de Editor
+.vscode/
+.idea/
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Logs e arquivos genéricos
+*.log
