@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Chamado, StatusChamado } from "@/lib/types";
 import { getTicketsApi, createTicketApi, updateTicketStatusApi, addInteractionApi, getTicketByIdApi } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export function useTickets() {
+  const { user, token } = useAuth();
   const [tickets, setTickets] = useState<Chamado[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Chamado | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -24,9 +26,15 @@ export function useTickets() {
     }
   }, []);
 
+  // Busca automaticamente assim que o componente é montado E assim que o token/usuário estiver disponível
   useEffect(() => {
-    fetchTickets();
-  }, [fetchTickets]);
+    if (user && token) {
+      fetchTickets();
+    } else {
+      setTickets([]);
+      setIsLoading(false);
+    }
+  }, [user, token, fetchTickets]);
 
   const selectTicket = async (id: string) => {
     setIsLoading(true);
