@@ -17,6 +17,7 @@ import {
   Sparkles,
   ArrowRight,
   CheckCircle2,
+  Lock,
 } from "lucide-react";
 
 interface TicketDetailModalProps {
@@ -241,29 +242,49 @@ export function TicketDetailModal({
                   )}
                 </div>
 
-                {/* Add interaction form */}
-                <form onSubmit={handleSendMessage} className="space-y-2 pt-2">
-                  <Textarea
-                    placeholder="Escreva uma resposta ou atualização sobre este chamado..."
-                    rows={2}
-                    value={novaMensagem}
-                    onChange={(e) => setNovaMensagem(e.target.value)}
-                    disabled={isSendingMessage}
-                  />
-                  <div className="flex justify-end">
-                    <Button
-                      type="submit"
-                      size="sm"
-                      variant="primary"
-                      isLoading={isSendingMessage}
-                      disabled={!novaMensagem.trim()}
-                      className="gap-1.5"
-                    >
-                      <Send className="w-3.5 h-3.5" />
-                      Enviar Resposta
-                    </Button>
+                {/* Add interaction form OR Closed Ticket Alert */}
+                {ticket.status === "RESOLVIDO" ? (
+                  <div className="p-4 rounded-xl bg-slate-100/80 border border-slate-200 text-slate-600 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-slate-200 flex items-center justify-center shrink-0">
+                      <Lock className="w-4 h-4 text-slate-600" />
+                    </div>
+                    <div className="text-xs space-y-0.5">
+                      <p className="font-semibold text-slate-800 flex items-center gap-1.5">
+                        <span>Chamado Encerrado</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 font-medium">
+                          Resolvido
+                        </span>
+                      </p>
+                      <p className="text-slate-500 text-[11px] leading-relaxed">
+                        Este ticket foi concluído com sucesso e tornou-se imutável. Novas mensagens e alterações estão
+                        bloqueadas para preservação da auditoria.
+                      </p>
+                    </div>
                   </div>
-                </form>
+                ) : (
+                  <form onSubmit={handleSendMessage} className="space-y-2 pt-2">
+                    <Textarea
+                      placeholder="Escreva uma resposta ou atualização sobre este chamado..."
+                      rows={2}
+                      value={novaMensagem}
+                      onChange={(e) => setNovaMensagem(e.target.value)}
+                      disabled={isSendingMessage}
+                    />
+                    <div className="flex justify-end">
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="primary"
+                        isLoading={isSendingMessage}
+                        disabled={!novaMensagem.trim()}
+                        className="gap-1.5"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        Enviar Resposta
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </div>
             )}
 

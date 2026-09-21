@@ -13,7 +13,7 @@ async function testarFase4() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       nome: 'Usuário Comum',
-      email: emailComum,
+      email: 'usuario@empresa.com',
       senha: 'SenhaForte@123',
       perfil: 'COMUM',
     }),
@@ -25,7 +25,7 @@ async function testarFase4() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      email: emailComum,
+      email: 'usuario@empresa.com',
       senha: 'SenhaForte@123',
     }),
   });

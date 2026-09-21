@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -231,6 +232,12 @@ export class TicketsService {
 
     if (!chamado) {
       throw new NotFoundException('Chamado não encontrado.');
+    }
+
+    if (chamado.status === 'RESOLVIDO') {
+      throw new BadRequestException(
+        'Este chamado já foi resolvido e está encerrado. Não é permitido adicionar novas mensagens.',
+      );
     }
 
     if (user.perfil !== 'TECNICO' && chamado.id_solicitante !== user.sub) {
