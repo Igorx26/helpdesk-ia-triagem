@@ -38,23 +38,22 @@ const PRIORIDADES_VALIDAS: PrioridadeIA[] = [
  * A IA já identifica esses padrões, mas esta lista serve como camada adicional de segurança.
  */
 const PALAVRAS_CHAVE_SEGURANCA = [
-  'phishing',
-  'ransomware',
-  'malware',
-  'vírus',
-  'virus',
-  'link malicioso',
-  'senha comprometida',
-  'acesso não autorizado',
-  'acesso nao autorizado',
-  'invasão',
-  'invasao',
-  'criptografado',
-  'sequestro de dados',
-  'ataque',
-  'hack',
-  'exploit',
-  'vazamento',
+  // Malware e Ransomware
+  'ransomware', 'malware', 'vírus', 'virus', 'trojan', 'cavalo de troia', 
+  'spyware', 'criptografado', '.locked', 'sequestro de dados', 'resgate', 'bitcoin',
+
+  // Engenharia Social e Phishing
+  'phishing', 'golpe', 'engenharia social', 'link malicioso', 'link suspeito', 
+  'email falso', 'e-mail falso', 'pediu minha senha', 'pedindo senha', 'solicitou senha',
+
+  // Acessos e Credenciais Comprometidas
+  'vazamento', 'vazaram', 'senha comprometida', 'senha exposta', 'credencial vazada',
+  'acesso não autorizado', 'acesso nao autorizado', 'acesso indevido', 'login desconhecido',
+  'invasão', 'invasao', 'invadido', 'hack', 'hacker', 'hackeado', 'logaram na minha conta',
+
+  // Vulnerabilidades e Ataques de Infraestrutura
+  'ataque', 'exploit', 'vulnerabilidade', 'brecha de segurança', 'ddos', 'backdoor',
+  'banco de dados exposto', 'dados sensíveis', 'lgpd'
 ];
 
 @Injectable()

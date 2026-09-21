@@ -20,7 +20,7 @@ if (!GEMINI_API_KEY) {
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const model = genAI.getGenerativeModel({
-  model: 'gemini-3.1-flash-lite',
+  model: 'gemini-3.5-flash-lite',
   generationConfig: {
     responseMimeType: 'application/json',
     responseSchema: {
