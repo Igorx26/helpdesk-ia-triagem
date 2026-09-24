@@ -1,4 +1,4 @@
-// This is your Prisma schema file,
+﻿// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Usuario {
@@ -32,7 +33,7 @@ model Chamado {
   descricao       String   @db.Text
   categoria       String   @db.VarChar(50)  // Preenchimento da IA: Hardware | Software | Rede | Seguranca
   prioridade      String   @db.VarChar(20)  // Preenchimento da IA: Baixa | Media | Alta | Critica
-  risco_seguranca Boolean  @default(false)  // Sinalizador de ameaça da IA
+  risco_seguranca Boolean  @default(false)  // Sinalizador de ameaÃ§a da IA
   status          String   @db.VarChar(50)  // NOVO | EM_ATENDIMENTO | AGUARDANDO_USUARIO | ESCALONADO | RESOLVIDO
   criado_em       DateTime @default(now())
   atualizado_em   DateTime @updatedAt
@@ -61,7 +62,7 @@ model LogsAuditoria {
   id          String   @id @default(uuid()) @db.VarChar(36)
   id_chamado  String   @db.VarChar(36)
   id_usuario  String   @db.VarChar(36)
-  acao        String   @db.VarChar(100) // Ex: "Mudança de Status"
+  acao        String   @db.VarChar(100) // Ex: "MudanÃ§a de Status"
   detalhes    Json     // Ex: { "de": "NOVO", "para": "EM_ATENDIMENTO" }
   criado_em   DateTime @default(now())
 
