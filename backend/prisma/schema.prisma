@@ -1,6 +1,3 @@
-﻿// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,12 +9,12 @@ datasource db {
 }
 
 model Usuario {
-  id          String   @id @default(uuid()) @db.VarChar(36)
-  nome        String   @db.VarChar(100)
-  email       String   @unique @db.VarChar(150)
-  senha_hash  String   @db.VarChar(255)
-  perfil      String   @db.VarChar(20) // 'COMUM' | 'TECNICO'
-  criado_em   DateTime @default(now())
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  nome       String   @db.VarChar(100)
+  email      String   @unique @db.VarChar(150)
+  senha_hash String   @db.VarChar(255)
+  perfil     String   @db.VarChar(20) // 'COMUM' | 'TECNICO'
+  criado_em  DateTime @default(now())
 
   chamados_abertos Chamado[]       @relation("SolicitanteChamados")
   interacoes       Interacao[]
@@ -31,10 +28,10 @@ model Chamado {
   id_solicitante  String   @db.VarChar(36)
   titulo          String   @db.VarChar(150)
   descricao       String   @db.Text
-  categoria       String   @db.VarChar(50)  // Preenchimento da IA: Hardware | Software | Rede | Seguranca
-  prioridade      String   @db.VarChar(20)  // Preenchimento da IA: Baixa | Media | Alta | Critica
-  risco_seguranca Boolean  @default(false)  // Sinalizador de ameaÃ§a da IA
-  status          String   @db.VarChar(50)  // NOVO | EM_ATENDIMENTO | AGUARDANDO_USUARIO | ESCALONADO | RESOLVIDO
+  categoria       String   @db.VarChar(50) // Preenchimento da IA: Hardware | Software | Rede | Seguranca
+  prioridade      String   @db.VarChar(20) // Preenchimento da IA: Baixa | Media | Alta | Critica
+  risco_seguranca Boolean  @default(false) // Sinalizador de ameaÃ§a da IA
+  status          String   @db.VarChar(50) // NOVO | EM_ATENDIMENTO | AGUARDANDO_USUARIO | ESCALONADO | RESOLVIDO
   criado_em       DateTime @default(now())
   atualizado_em   DateTime @updatedAt
 
@@ -59,16 +56,15 @@ model Interacao {
 }
 
 model LogsAuditoria {
-  id          String   @id @default(uuid()) @db.VarChar(36)
-  id_chamado  String   @db.VarChar(36)
-  id_usuario  String   @db.VarChar(36)
-  acao        String   @db.VarChar(100) // Ex: "MudanÃ§a de Status"
-  detalhes    Json     // Ex: { "de": "NOVO", "para": "EM_ATENDIMENTO" }
-  criado_em   DateTime @default(now())
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  id_chamado String   @db.VarChar(36)
+  id_usuario String   @db.VarChar(36)
+  acao       String   @db.VarChar(100) // Ex: "MudanÃ§a de Status"
+  detalhes   Json // Ex: { "de": "NOVO", "para": "EM_ATENDIMENTO" }
+  criado_em  DateTime @default(now())
 
   chamado Chamado @relation(fields: [id_chamado], references: [id])
   usuario Usuario @relation(fields: [id_usuario], references: [id])
 
   @@map("logs_auditoria")
 }
-
