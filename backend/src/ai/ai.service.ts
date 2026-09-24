@@ -39,21 +39,59 @@ const PRIORIDADES_VALIDAS: PrioridadeIA[] = [
  */
 const PALAVRAS_CHAVE_SEGURANCA = [
   // Malware e Ransomware
-  'ransomware', 'malware', 'vírus', 'virus', 'trojan', 'cavalo de troia', 
-  'spyware', 'criptografado', '.locked', 'sequestro de dados', 'resgate', 'bitcoin',
+  'ransomware',
+  'malware',
+  'vírus',
+  'virus',
+  'trojan',
+  'cavalo de troia',
+  'spyware',
+  'criptografado',
+  '.locked',
+  'sequestro de dados',
+  'resgate',
+  'bitcoin',
 
   // Engenharia Social e Phishing
-  'phishing', 'golpe', 'engenharia social', 'link malicioso', 'link suspeito', 
-  'email falso', 'e-mail falso', 'pediu minha senha', 'pedindo senha', 'solicitou senha',
+  'phishing',
+  'golpe',
+  'engenharia social',
+  'link malicioso',
+  'link suspeito',
+  'email falso',
+  'e-mail falso',
+  'pediu minha senha',
+  'pedindo senha',
+  'solicitou senha',
 
   // Acessos e Credenciais Comprometidas
-  'vazamento', 'vazaram', 'senha comprometida', 'senha exposta', 'credencial vazada',
-  'acesso não autorizado', 'acesso nao autorizado', 'acesso indevido', 'login desconhecido',
-  'invasão', 'invasao', 'invadido', 'hack', 'hacker', 'hackeado', 'logaram na minha conta',
+  'vazamento',
+  'vazaram',
+  'senha comprometida',
+  'senha exposta',
+  'credencial vazada',
+  'acesso não autorizado',
+  'acesso nao autorizado',
+  'acesso indevido',
+  'login desconhecido',
+  'invasão',
+  'invasao',
+  'invadido',
+  'hack',
+  'hacker',
+  'hackeado',
+  'logaram na minha conta',
 
   // Vulnerabilidades e Ataques de Infraestrutura
-  'ataque', 'exploit', 'vulnerabilidade', 'brecha de segurança', 'ddos', 'backdoor',
-  'banco de dados exposto', 'dados sensíveis', 'lgpd'
+  'ataque',
+  'exploit',
+  'vulnerabilidade',
+  'brecha de segurança',
+  'ddos',
+  'backdoor',
+  'banco de dados exposto',
+  'dados sensíveis',
+  'lgpd',
 ];
 
 @Injectable()
@@ -80,68 +118,100 @@ export class AiService {
     titulo: string,
     descricao: string,
   ): Promise<AiAnalysisResult> {
-    const model = this.genAI.getGenerativeModel({
-      model: 'gemini-3.8-flash',
-      // Structured output: força retorno exclusivamente no formato JSON estrito
-      generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: SchemaType.OBJECT,
-          properties: {
-            categoria: {
-              type: SchemaType.STRING,
-              format: 'enum',
-              enum: ['Hardware', 'Software', 'Rede', 'Seguranca'],
-              description:
-                'Categoria técnica do chamado de TI. Use "Seguranca" para ameaças cibernéticas.',
-            },
-            prioridade: {
-              type: SchemaType.STRING,
-              format: 'enum',
-              enum: ['Baixa', 'Media', 'Alta', 'Critica'],
-              description:
-                'Nível de urgência: Baixa (informacional), Media (impacto parcial), Alta (impacto significativo), Critica (ameaça de segurança ou sistema totalmente inoperante).',
-            },
-            risco_seguranca: {
-              type: SchemaType.BOOLEAN,
-              description:
-                'true APENAS se identificar padrões de phishing, ransomware, malware, links maliciosos, senhas comprometidas, acessos não autorizados ou qualquer ameaça cibernética.',
-            },
-          },
-          required: ['categoria', 'prioridade', 'risco_seguranca'],
-        },
-      },
-      // Configurações de segurança - permite análise de conteúdo relacionado a ataques
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-        },
-      ],
-    });
+    // Fila de modelos: tenta o principal primeiro, depois os de backup em caso de 503
+    const MODELOS_TENTATIVA = [
+      'gemini-3.8-flash',
+      'gemini-3.7-flash',
+      'gemini-3.5-flash-lite',
+    ];
 
     const prompt = this.buildPrompt(titulo, descricao);
 
-    try {
-      const result = await model.generateContent(prompt);
-      const rawText = result.response.text();
+    for (const modelName of MODELOS_TENTATIVA) {
+      try {
+        this.logger.debug(`Tentando análise de IA com o modelo: ${modelName}`);
 
-      this.logger.debug(`Resposta bruta da IA: ${rawText}`);
+        const model = this.genAI.getGenerativeModel({
+          model: modelName,
+          // Structured output: força retorno exclusivamente no formato JSON estrito
+          generationConfig: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: SchemaType.OBJECT,
+              properties: {
+                categoria: {
+                  type: SchemaType.STRING,
+                  format: 'enum',
+                  enum: ['Hardware', 'Software', 'Rede', 'Seguranca'],
+                  description:
+                    'Categoria técnica do chamado de TI. Use "Seguranca" para ameaças cibernéticas.',
+                },
+                prioridade: {
+                  type: SchemaType.STRING,
+                  format: 'enum',
+                  enum: ['Baixa', 'Media', 'Alta', 'Critica'],
+                  description:
+                    'Nível de urgência: Baixa (informacional), Media (impacto parcial), Alta (impacto significativo), Critica (ameaça de segurança ou sistema totalmente inoperante).',
+                },
+                risco_seguranca: {
+                  type: SchemaType.BOOLEAN,
+                  description:
+                    'true APENAS se identificar padrões de phishing, ransomware, malware, links maliciosos, senhas comprometidas, acessos não autorizados ou qualquer ameaça cibernética.',
+                },
+              },
+              required: ['categoria', 'prioridade', 'risco_seguranca'],
+            },
+          },
+          // Configurações de segurança - permite análise de conteúdo relacionado a ataques
+          safetySettings: [
+            {
+              category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+            },
+          ],
+        });
 
-      const parsed = JSON.parse(rawText) as Partial<AiAnalysisResult>;
-      return this.validarEAplicarProtocoloCritico(parsed, descricao);
-    } catch (error) {
-      this.logger.error(
-        `Falha na análise de IA: ${error instanceof Error ? error.message : String(error)}`,
-      );
-      // Fallback seguro: em caso de falha da IA, o chamado é criado com prioridade Alta
-      // para garantir atenção humana. Não bloqueia a operação do usuário.
-      return this.fallbackSeguro(titulo, descricao);
+        const requestPromise = model.generateContent(prompt);
+
+        // Cria um cronômetro fatal de 8 segundos
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(
+            () =>
+              reject(
+                new Error(`Timeout de 15s estourado no modelo ${modelName}`),
+              ),
+            15000,
+          ),
+        );
+
+        // O Node.js executa ambas simultaneamente. A que terminar primeiro (a resposta ou o cronômetro) vence.
+        const result = (await Promise.race([
+          requestPromise,
+          timeoutPromise,
+        ])) as any;
+        const rawText = result.response.text();
+
+        this.logger.debug(`Resposta bruta da IA (${modelName}): ${rawText}`);
+
+        const parsed = JSON.parse(rawText) as Partial<AiAnalysisResult>;
+        return this.validarEAplicarProtocoloCritico(parsed, descricao);
+      } catch (error) {
+        this.logger.warn(
+          `Falha na análise com ${modelName}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        // O loop continua para o próximo modelo do array
+      }
     }
+
+    // Fallback seguro: acionado apenas se TODOS os modelos do array falharem
+    this.logger.error(
+      `Todos os modelos de IA falharam. Acionando fallback de segurança para o chamado: "${titulo}"`,
+    );
+    return this.fallbackSeguro(titulo, descricao);
   }
 
   /**
