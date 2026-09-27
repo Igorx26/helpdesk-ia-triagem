@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/Card";
@@ -43,8 +43,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
           <CardTitle className="text-white text-base">Abrir Novo Chamado de Suporte</CardTitle>
         </div>
         <CardDescription className="text-blue-100 text-xs">
-          Formulário simplificado: informe apenas o que está acontecendo. Nossa IA categoriza, prioriza e analisa riscos
-          de segurança em tempo real.
+          Formulário simplificado: informe apenas o que está acontecendo. Nossa IA categoriza, prioriza e analisa riscos de segurança em tempo real.
         </CardDescription>
       </CardHeader>
 
@@ -71,7 +70,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
               </p>
               {lastCreated.risco_seguranca && (
                 <p className="font-bold text-[#DC2626]">
-                  ⚠️ Protocolo de Incidente Crítico ativado: ameaça cibernética identificada e priorizada para resposta
+                  🚨 Protocolo de Incidente Crítico ativado: ameaça cibernética identificada e priorizada para resposta
                   imediata.
                 </p>
               )}
@@ -80,7 +79,10 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
         )}
 
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">{errorMessage}</div>
+          <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-semibold text-red-700 flex items-start gap-2">
+            <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
+            {errorMessage}
+          </div>
         )}
 
         {/* Minimalist form strictly requiring ONLY Title and Description */}

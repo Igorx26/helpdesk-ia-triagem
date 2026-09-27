@@ -1,4 +1,4 @@
-export type PerfilUsuario = "COMUM" | "TECNICO";
+export type PerfilUsuario = "COMUM" | "TECNICO" | "ADMIN";
 
 export interface Usuario {
   id: string;

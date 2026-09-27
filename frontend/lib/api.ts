@@ -1,4 +1,4 @@
-import { Chamado, StatusChamado, Usuario } from "./types";
+﻿import { Chamado, StatusChamado, Usuario } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
 
@@ -21,26 +21,6 @@ export async function loginApi(email: string, senha: string): Promise<{ access_t
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message || "Credenciais inválidas.");
-  }
-
-  return res.json();
-}
-
-export async function registerApi(
-  nome: string,
-  email: string,
-  senha: string,
-  perfil: "COMUM" | "TECNICO",
-): Promise<Usuario> {
-  const res = await fetch(`${API_BASE}/users/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nome, email, senha, perfil }),
-  });
-
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.message || "Erro ao cadastrar usuário.");
   }
 
   return res.json();
@@ -90,6 +70,9 @@ export async function createTicketApi(titulo: string, descricao: string): Promis
   });
 
   if (!res.ok) {
+    if (res.status === 429) {
+      throw new Error("Muitos chamados abertos em um curto período. Por favor, aguarde alguns minutos e tente novamente.");
+    }
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message || "Falha ao abrir chamado.");
   }
@@ -120,9 +103,72 @@ export async function addInteractionApi(id: string, mensagem: string) {
   });
 
   if (!res.ok) {
+    if (res.status === 429) {
+      throw new Error("Você está enviando mensagens muito rápido. Por favor, aguarde um pouco.");
+    }
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message || "Falha ao enviar mensagem.");
   }
 
+  return res.json();
+}
+
+// User Management APIs
+export async function getUsersApi(page: number = 1, limit: number = 10, search: string = "") {
+  const res = await fetch(`${API_BASE}/users?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Falha ao carregar usuários.");
+  return res.json();
+}
+
+export async function createUserApi(data: any): Promise<Usuario> {
+  const res = await fetch(`${API_BASE}/users`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.message || "Falha ao criar usuário.");
+  }
+  return res.json();
+}
+
+export async function updateUserApi(id: string, data: any): Promise<Usuario> {
+  const res = await fetch(`${API_BASE}/users/${id}`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.message || "Falha ao atualizar usuário.");
+  }
+  return res.json();
+}
+
+export async function deleteUserApi(id: string) {
+  const res = await fetch(`${API_BASE}/users/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.message || "Falha ao excluir usuário.");
+  }
+  return true;
+}
+
+export async function updateMeApi(data: any): Promise<Usuario> {
+  const res = await fetch(`${API_BASE}/users/me`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.message || "Falha ao atualizar perfil.");
+  }
   return res.json();
 }

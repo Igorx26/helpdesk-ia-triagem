@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { cn } from "@/lib/utils";
 import { StatusChamado, PrioridadeChamado } from "@/lib/types";
 import { ShieldAlert, ShieldCheck } from "lucide-react";
@@ -9,36 +9,41 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export function StatusBadge({ status }: { status: StatusChamado }) {
-  const configs: Record<StatusChamado, { label: string; bg: string; text: string; border: string }> = {
+  const configs: Record<StatusChamado, { label: string; bg: string; text: string; border: string; dot: string }> = {
     NOVO: {
       label: "Novo",
       bg: "bg-[#0284C7]/10",
       text: "text-[#0284C7]",
       border: "border-[#0284C7]/30",
+      dot: "bg-[#0284C7]",
     },
     EM_ATENDIMENTO: {
       label: "Em Atendimento",
       bg: "bg-[#D97706]/10",
       text: "text-[#D97706]",
       border: "border-[#D97706]/30",
+      dot: "bg-[#D97706]",
     },
     AGUARDANDO_USUARIO: {
       label: "Aguardando Usuário",
       bg: "bg-[#D97706]/10",
       text: "text-[#D97706]",
       border: "border-[#D97706]/30",
+      dot: "bg-[#D97706]",
     },
     ESCALONADO: {
       label: "Escalonado",
       bg: "bg-[#7E22CE]/10",
       text: "text-[#7E22CE]",
       border: "border-[#7E22CE]/30",
+      dot: "bg-[#7E22CE]",
     },
     RESOLVIDO: {
       label: "Resolvido",
       bg: "bg-[#16A34A]/10",
       text: "text-[#16A34A]",
       border: "border-[#16A34A]/30",
+      dot: "bg-[#16A34A]",
     },
   };
 
@@ -53,7 +58,7 @@ export function StatusBadge({ status }: { status: StatusChamado }) {
         cfg.border,
       )}
     >
-      <span className={cn("w-1.5 h-1.5 rounded-full mr-1.5", cfg.text.replace("text-", "bg-"))} />
+      <span className={cn("w-1.5 h-1.5 rounded-full mr-1.5", cfg.dot)} />
       {cfg.label}
     </span>
   );

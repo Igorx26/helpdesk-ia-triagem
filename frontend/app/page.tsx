@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -27,7 +27,7 @@ export default function HomePage() {
     addInteraction,
   } = useTickets();
 
-  const [showCreateForm, setShowCreateForm] = useState(true);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   if (authLoading) {
     return (
@@ -44,7 +44,7 @@ export default function HomePage() {
     return <LoginForm />;
   }
 
-  const isTecnico = user.perfil === "TECNICO";
+  const isTecnico = user.perfil === "TECNICO" || user.perfil === "ADMIN";
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex flex-col">
@@ -81,37 +81,36 @@ export default function HomePage() {
               Atualizar Fila
             </Button>
 
-            {!isTecnico && (
-              <Button
-                variant={showCreateForm ? "outline" : "accent"}
-                size="sm"
-                onClick={() => setShowCreateForm(!showCreateForm)}
-                className="gap-1.5 text-xs"
-              >
-                <PlusCircle className="w-3.5 h-3.5" />
-                {showCreateForm ? "Ocultar Formulário" : "Novo Chamado"}
-              </Button>
-            )}
+            <Button
+              variant={showCreateForm ? "outline" : "accent"}
+              size="sm"
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="gap-1.5 text-xs"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              {showCreateForm ? "Ocultar Formulário" : "Novo Chamado"}
+            </Button>
           </div>
         </div>
 
-        {/* Layout Grid: For Comum, Show Create Form + List; For Tecnico, focus on List */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Create Form: full width for Comum or expandable */}
-          {(!isTecnico || showCreateForm) && (
-            <div className={`${isTecnico ? "lg:col-span-12" : "lg:col-span-5"}`}>
+        {/* Layout Stacked Vertically */}
+        <div className="flex flex-col gap-6">
+          {/* Create Form */}
+          {showCreateForm && (
+            <div className="w-full max-w-4xl mx-auto">
               <TicketCreateForm
                 onSubmitTicket={createTicket}
                 isSubmitting={isSubmitting}
                 onTicketCreated={(ticket) => {
                   fetchTickets();
+                  setShowCreateForm(false);
                 }}
               />
             </div>
           )}
 
           {/* Ticket List Queue */}
-          <div className={`${!isTecnico && showCreateForm ? "lg:col-span-7" : "lg:col-span-12"}`}>
+          <div className="w-full">
             <TicketList
               tickets={tickets}
               isLoading={ticketsLoading}
