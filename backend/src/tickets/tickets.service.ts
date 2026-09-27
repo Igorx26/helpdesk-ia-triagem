@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NotFoundException,
   ForbiddenException,
@@ -27,16 +27,16 @@ export class TicketsService {
    */
   async create(user: JwtPayload, dto: CreateTicketDto) {
     this.logger.log(
-      `Processando abertura de chamado pelo usuário ${user.email}: "${dto.titulo}"`,
+      `Processando abertura de chamado pelo usuÃ¡rio ${user.email}: "${dto.titulo}"`,
     );
 
-    // 1. Processamento obrigatório de IA
+    // 1. Processamento obrigatÃ³rio de IA
     const analiseIa = await this.aiService.analisarChamado(
       dto.titulo,
       dto.descricao,
     );
 
-    // 2. Persistência no banco via Prisma
+    // 2. PersistÃªncia no banco via Prisma
     const novoChamado = await this.prisma.chamado.create({
       data: {
         id_solicitante: user.sub,
@@ -80,15 +80,15 @@ export class TicketsService {
   /**
    * Lista os chamados de acordo com o perfil:
    * - TECNICO: Todos os chamados
-   * - COMUM: Apenas os chamados abertos pelo próprio usuário
+   * - COMUM: Apenas os chamados abertos pelo prÃ³prio usuÃ¡rio
    */
   async findAll(user: JwtPayload) {
-    const isTecnico = user.perfil === 'TECNICO';
+    const isTecnico = ['TECNICO', 'ADMIN'].includes(user.perfil);
 
     return this.prisma.chamado.findMany({
       where: isTecnico ? {} : { id_solicitante: user.sub },
       orderBy: [
-        // Chamados com risco de segurança e prioridade crítica aparecem primeiro
+        // Chamados com risco de seguranÃ§a e prioridade crÃ­tica aparecem primeiro
         { risco_seguranca: 'desc' },
         { criado_em: 'desc' },
       ],
@@ -106,7 +106,7 @@ export class TicketsService {
   }
 
   /**
-   * Busca um chamado por ID respeitando permissões de visualização
+   * Busca um chamado por ID respeitando permissÃµes de visualizaÃ§Ã£o
    */
   async findOne(id: string, user: JwtPayload) {
     const chamado = await this.prisma.chamado.findUnique({
@@ -150,12 +150,12 @@ export class TicketsService {
     });
 
     if (!chamado) {
-      throw new NotFoundException('Chamado não encontrado.');
+      throw new NotFoundException('Chamado nÃ£o encontrado.');
     }
 
-    if (user.perfil !== 'TECNICO' && chamado.id_solicitante !== user.sub) {
+    if (!['TECNICO', 'ADMIN'].includes(user.perfil) && chamado.id_solicitante !== user.sub) {
       throw new ForbiddenException(
-        'Você não tem permissão para visualizar este chamado.',
+        'VocÃª nÃ£o tem permissÃ£o para visualizar este chamado.',
       );
     }
 
@@ -163,8 +163,8 @@ export class TicketsService {
   }
 
   /**
-   * Altera o status do chamado (exclusivo para Técnicos).
-   * Registra log de auditoria imutável com os estados 'de' e 'para'.
+   * Altera o status do chamado (exclusivo para TÃ©cnicos).
+   * Registra log de auditoria imutÃ¡vel com os estados 'de' e 'para'.
    */
   async updateStatus(id: string, user: JwtPayload, dto: UpdateTicketStatusDto) {
     const chamado = await this.prisma.chamado.findUnique({
@@ -172,7 +172,7 @@ export class TicketsService {
     });
 
     if (!chamado) {
-      throw new NotFoundException('Chamado não encontrado.');
+      throw new NotFoundException('Chamado nÃ£o encontrado.');
     }
 
     const statusAnterior = chamado.status;
@@ -182,7 +182,7 @@ export class TicketsService {
       return chamado;
     }
 
-    // Atualiza status e registra auditoria em transação
+    // Atualiza status e registra auditoria em transaÃ§Ã£o
     const [chamadoAtualizado] = await this.prisma.$transaction([
       this.prisma.chamado.update({
         where: { id },
@@ -202,7 +202,7 @@ export class TicketsService {
         data: {
           id_chamado: id,
           id_usuario: user.sub,
-          acao: 'Mudança de Status',
+          acao: 'MudanÃ§a de Status',
           detalhes: {
             de: statusAnterior,
             para: novoStatus,
@@ -212,14 +212,14 @@ export class TicketsService {
     ]);
 
     this.logger.log(
-      `Status do chamado ${id} alterado de "${statusAnterior}" para "${novoStatus}" pelo técnico ${user.email}`,
+      `Status do chamado ${id} alterado de "${statusAnterior}" para "${novoStatus}" pelo tÃ©cnico ${user.email}`,
     );
 
     return chamadoAtualizado;
   }
 
   /**
-   * Adiciona uma mensagem/interação no chamado
+   * Adiciona uma mensagem/interaÃ§Ã£o no chamado
    */
   async addInteraction(
     id: string,
@@ -231,18 +231,18 @@ export class TicketsService {
     });
 
     if (!chamado) {
-      throw new NotFoundException('Chamado não encontrado.');
+      throw new NotFoundException('Chamado nÃ£o encontrado.');
     }
 
     if (chamado.status === 'RESOLVIDO') {
       throw new BadRequestException(
-        'Este chamado já foi resolvido e está encerrado. Não é permitido adicionar novas mensagens.',
+        'Este chamado jÃ¡ foi resolvido e estÃ¡ encerrado. NÃ£o Ã© permitido adicionar novas mensagens.',
       );
     }
 
-    if (user.perfil !== 'TECNICO' && chamado.id_solicitante !== user.sub) {
+    if (!['TECNICO', 'ADMIN'].includes(user.perfil) && chamado.id_solicitante !== user.sub) {
       throw new ForbiddenException(
-        'Você não tem permissão para interagir neste chamado.',
+        'VocÃª nÃ£o tem permissÃ£o para interagir neste chamado.',
       );
     }
 

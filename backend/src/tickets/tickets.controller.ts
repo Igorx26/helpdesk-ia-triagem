@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Get,
   Post,
@@ -11,6 +11,7 @@ import { TicketsService } from './tickets.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketStatusDto } from './dto/update-ticket-status.dto.js';
 import { CreateInteractionDto } from './dto/create-interaction.dto.js';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
@@ -25,6 +26,7 @@ export class TicketsController {
   /**
    * POST /api/v1/tickets - Abre um novo chamado (Qualquer usuário autenticado)
    */
+  @UseGuards(ThrottlerGuard)
   @Post()
   async create(@CurrentUser() user: JwtPayload, @Body() dto: CreateTicketDto) {
     return this.ticketsService.create(user, dto);
@@ -47,9 +49,9 @@ export class TicketsController {
   }
 
   /**
-   * PATCH /api/v1/tickets/:id/status - Altera status do chamado (Apenas TECNICO)
+   * PATCH /api/v1/tickets/:id/status - Altera status do chamado (Apenas TECNICO ou ADMIN)
    */
-  @Roles('TECNICO')
+  @Roles('TECNICO', 'ADMIN')
   @Patch(':id/status')
   async updateStatus(
     @Param('id') id: string,

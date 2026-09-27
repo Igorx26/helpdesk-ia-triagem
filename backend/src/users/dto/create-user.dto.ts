@@ -22,8 +22,8 @@ export class CreateUserDto {
   @MinLength(8, { message: 'A senha deve ter no mínimo 8 caracteres.' })
   senha!: string;
 
-  @IsIn(['COMUM', 'TECNICO'], {
-    message: 'Perfil inválido. Use COMUM ou TECNICO.',
+  @IsIn(['COMUM', 'TECNICO', 'ADMIN'], {
+    message: 'Perfil inválido. Use COMUM, TECNICO ou ADMIN.',
   })
-  perfil!: 'COMUM' | 'TECNICO';
+  perfil!: 'COMUM' | 'TECNICO' | 'ADMIN';
 }

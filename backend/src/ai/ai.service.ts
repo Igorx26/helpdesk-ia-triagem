@@ -182,9 +182,9 @@ export class AiService {
           setTimeout(
             () =>
               reject(
-                new Error(`Timeout de 15s estourado no modelo ${modelName}`),
+                new Error(`Timeout de 10s estourado no modelo ${modelName}`),
               ),
-            15000,
+            10000,
           ),
         );
 

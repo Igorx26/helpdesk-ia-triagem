@@ -1,11 +1,13 @@
-import {
+﻿import {
   ConflictException,
   Injectable,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
+import { UpdateUserDto } from './dto/update-user.dto.js';
 import { UsuarioSafeDto, toUsuarioSafe } from './dto/usuario-safe.dto.js';
 
 @Injectable()
@@ -37,6 +39,28 @@ export class UsersService {
     return toUsuarioSafe(usuario);
   }
 
+  async findAll(page: number, limit: number, search: string) {
+    const skip = (page - 1) * limit;
+    const where = search ? { nome: { contains: search, mode: 'insensitive' as any } } : {};
+
+    const [total, usuarios] = await Promise.all([
+      this.prisma.usuario.count({ where }),
+      this.prisma.usuario.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { nome: 'asc' },
+      }),
+    ]);
+
+    return {
+      total,
+      page,
+      limit,
+      data: usuarios.map(toUsuarioSafe),
+    };
+  }
+
   async findByEmail(email: string) {
     return this.prisma.usuario.findUnique({ where: { email } });
   }
@@ -49,5 +73,54 @@ export class UsersService {
     }
 
     return toUsuarioSafe(usuario);
+  }
+
+  async update(id: string, dto: UpdateUserDto, currentUserRole: string): Promise<UsuarioSafeDto> {
+    const usuario = await this.prisma.usuario.findUnique({ where: { id } });
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+
+    if (currentUserRole === 'TECNICO' && usuario.perfil !== 'COMUM') {
+      throw new ForbiddenException('Técnicos só podem alterar contas de usuários COMUM.');
+    }
+
+    if (currentUserRole === 'TECNICO' && dto.perfil && dto.perfil !== 'COMUM') {
+      throw new ForbiddenException('Técnicos não podem alterar o perfil para níveis superiores.');
+    }
+
+    if (currentUserRole === 'COMUM' && dto.perfil && dto.perfil !== 'COMUM') {
+      throw new ForbiddenException('Usuários não podem alterar o próprio perfil de acesso.');
+    }
+
+    if (dto.email && dto.email !== usuario.email) {
+      const existente = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
+      if (existente) throw new ConflictException('Já existe um usuário com este e-mail.');
+    }
+
+    const dataToUpdate: any = { ...dto };
+    delete dataToUpdate.senha;
+
+    if (dto.senha) {
+      dataToUpdate.senha_hash = await bcrypt.hash(dto.senha, this.SALT_ROUNDS);
+    }
+
+    const updated = await this.prisma.usuario.update({
+      where: { id },
+      data: dataToUpdate,
+    });
+
+    return toUsuarioSafe(updated);
+  }
+
+  async remove(id: string): Promise<void> {
+    const usuario = await this.prisma.usuario.findUnique({ where: { id } });
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+
+    await this.prisma.usuario.delete({ where: { id } });
   }
 }
