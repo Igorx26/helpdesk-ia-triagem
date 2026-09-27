@@ -1,46 +1,47 @@
-# Helpdesk de TI com Triagem Inteligente
+﻿# Helpdesk de TI Corporativo com Triagem Inteligente (IA)
 
-> Projeto acadêmico de Análise e Desenvolvimento de Sistemas — Igor Martins Silva
-
-Sistema corporativo de Helpdesk que elimina a fricção técnica do usuário final ao delegar a categorização e priorização de chamados a uma Inteligência Artificial (Google Gemini). Ao mesmo tempo, atua como barreira de segurança, identificando ameaças cibernéticas em tempo real durante a abertura do chamado.
+Um sistema de Helpdesk moderno, desenvolvido para simplificar o suporte técnico corporativo e acelerar o tempo de resposta a incidentes. Com o auxílio de uma Inteligência Artificial integrada, a complexidade técnica é abstraída do usuário final, enquanto a equipe de TI obtém métricas automáticas de prioridade e risco.
 
 ---
 
-## Funcionalidades Principais
+## 🤖 Desenvolvimento Assistido por IA (AI-Assisted Engineering)
 
-| Funcionalidade                     | Descrição                                                                                                                            |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **Formulário Minimalista**         | O colaborador preenche apenas **Título** e **Descrição**. A IA define categoria, prioridade e risco automaticamente.                 |
-| **Triagem por IA (NLP)**           | Toda descrição é obrigatoriamente analisada pelo Gemini antes de ser salva na fila.                                                  |
-| **Protocolo de Incidente Crítico** | Se a IA detectar phishing, ransomware ou credenciais comprometidas, prioridade é forçada para `Critica` e `risco_seguranca = true`.  |
-| **RBAC (Perfis)**                  | `COMUM`: visualiza e interage apenas nos próprios chamados. `TECNICO`: visualiza a fila global e altera o ciclo de vida dos tickets. |
-| **Ciclo de Vida do Ticket**        | `NOVO` → `EM_ATENDIMENTO` → `AGUARDANDO_USUARIO` → `ESCALONADO` → `RESOLVIDO`                                                        |
-| **Trilha de Auditoria Imutável**   | Cada transição de status é registrada com autor, timestamp e estados anterior/novo.                                                  |
+Este projeto foi desenvolvido utilizando uma abordagem vanguardista de engenharia de software, onde atuei como **Arquiteto de Software e Product Manager**, orquestrando **Agentes Autônomos de Codificação (Antigravity e Gemini API)** para a execução e implementação do código.
+
+O fluxo de desenvolvimento consistiu nas seguintes etapas operacionais:
+
+- **Engenharia de Requisitos & System Design:** Toda a regra de negócio, modelagem de banco de dados relacional (Prisma), matriz de privilégios de segurança (RBAC com perfis `Admin`, `Técnico` e `Comum`) e a arquitetura distribuída do sistema foram elaboradas estruturalmente por mim, e minuciosamente documentadas nos arquivos de Especificação (`PRD.md` e `TECH_SPEC.md`).
+- **Contexto de IA Restrito (Knowledge Base Prompting):** Os arquivos `.md` presentes na raiz do repositório funcionaram como a base central de conhecimento de projeto, criando barreiras semânticas e regras estritas que guiaram a IA de codificação a gerar a interface (Next.js) e arquitetar a infraestrutura da API (NestJS) exatamente conforme o escopo planejado.
+- **Auditoria, Segurança e Refatoração:** A integração assíncrona, a construção dos layouts reativos e, principalmente, as travas de segurança de rede (como a imposição do Rate Limit de 5 req/hora contra floodings) foram rigorosamente auditadas, corrigidas e lapidadas em iterações humanas.
+
+> **Resultado:** Esta metodologia aplicada demonstra, na prática, o poder de fundir o planejamento de produto e a visão sistêmica humana com a velocidade de execução paralela das inteligências artificiais, construindo softwares corporativos escaláveis (Production-Ready) com governança técnica absoluta.
+
+---
+
+## Diferenciais e Funcionalidades
+
+- **Abertura Minimalista de Chamados:** O colaborador escreve o que está acontecendo como se estivesse mandando uma mensagem de chat. Nenhuma necessidade de selecionar sistemas, categorias obscuras ou prioridades subjetivas.
+- **Triagem Ativa por IA (Gemini API):** O modelo Processamento de Linguagem Natural classifica automaticamente a Categoria (Hardware, Software, Rede, Segurança) e define a Prioridade (Baixa a Crítica).
+- **Detecção Cibernética em Tempo Real:** O sistema analisa a descrição do usuário em busca de links, e-mails de phishing relatados, falhas de senha ou comportamento anômalo, ativando alertas de risco de segurança automaticamente.
+- **Painel de Controle e Auditoria:** Uma visão global com controle de papéis (`ADMIN`, `TECNICO`, `COMUM`). Histórico imutável de quem alterou qual status em cada ticket.
+- **Arquitetura Invite-Only e Defesa de Borda:** Inexistência de rotas de registros abertos, proteção de endpoints via `Guards` do NestJS e limitação severa de tráfego (Rate Limiting via `Throttler`) no ambiente de envio de prompts de IA para inibir sobrecargas maliciosas.
 
 ---
 
 ## Stack Tecnológica
 
-```
-helpdesk_com_ia/
-├── backend/       # NestJS · Node.js · TypeScript · Prisma ORM · PostgreSQL
-└── frontend/      # Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4
-```
-
-| Camada                      | Tecnologia                             | Versão |
-| --------------------------- | -------------------------------------- | ------ |
-| **Frontend**                | Next.js (App Router)                   | 16.x   |
-| **Frontend UI**             | Tailwind CSS v4 + Lucide Icons         | 4.x    |
-| **Backend**                 | NestJS                                 | 10.x   |
-| **ORM**                     | Prisma                                 | 5.x    |
-| **Banco de Dados**          | PostgreSQL                             | 14+    |
-| **Autenticação**            | JWT + Passport.js + bcrypt             | —      |
-| **Inteligência Artificial** | Google Gemini API (`gemini-3.8-flash`) | —      |
-| **Linguagem**               | TypeScript (full-stack)                | 5.x    |
+| Componente           | Tecnologia                          |
+| -------------------- | ----------------------------------- |
+| **Frontend**         | React, Next.js (App Router)         |
+| **Estilização**      | Tailwind CSS, `shadcn/ui`, Lucide Icons |
+| **Backend**          | NestJS, TypeScript, JWT (Auth)      |
+| **Banco de Dados**   | PostgreSQL                          |
+| **ORM**              | Prisma                              |
+| **Inteligência Art.**| Google Gemini API (`gemini-3.8-flash`) |
 
 ---
 
-## Paleta de Cores (Design System)
+## Design System & Status do Sistema
 
 | Token         | Cor        | Hex                                                         | Uso                       |
 | ------------- | ---------- | ----------------------------------------------------------- | ------------------------- |
@@ -49,7 +50,7 @@ helpdesk_com_ia/
 | Accent        | Orange 600 | `#EA580C`                                                   | Ações de destaque         |
 | 🟢 Verde      | `#16A34A`  | Status `RESOLVIDO`, sucesso                                 |
 | 🔵 Azul Claro | `#0284C7`  | Status `NOVO`                                               |
-| 🟡 Amarelo    | `#D97706`  | `EM_ATENDIMENTO`, `AGUARDANDO_USUARIO`, prioridade `MEDIA`  |
+| 🟠 Amarelo    | `#D97706`  | `EM_ATENDIMENTO`, `AGUARDANDO_USUARIO`, prioridade `MEDIA`  |
 | 🟣 Roxo       | `#7E22CE`  | Status `ESCALONADO`                                         |
 | 🔴 Vermelho   | `#DC2626`  | Prioridades `ALTA`/`CRITICA`, flag `risco_seguranca`, erros |
 
@@ -83,7 +84,7 @@ CREATE DATABASE helpdesk_db;
 
 ---
 
-### 3. Backend (NestJS — porta 3001)
+### 3. Backend (NestJS – porta 3001)
 
 ```bash
 cd backend
@@ -108,7 +109,7 @@ Conteúdo do `backend/.env`:
 # Banco de dados PostgreSQL
 DATABASE_URL="postgresql://SEU_USUARIO:SUA_SENHA@localhost:5432/helpdesk_db?schema=public"
 
-# JWT — troque por um secret forte em produção
+# JWT – troque por um secret forte em produção
 JWT_SECRET=seu_secret_jwt_aqui
 
 # Google Gemini
@@ -117,6 +118,10 @@ GEMINI_API_KEY=sua_chave_gemini_aqui
 # Servidor
 PORT=3001
 NODE_ENV=development
+
+# Super Admin (Opcional - Usado no script de seed para injetar o ADMIN em produção)
+SUPER_ADMIN_EMAIL=seu_email_admin_real@empresa.com
+SUPER_ADMIN_PASSWORD=sua_senha_segura_de_producao
 ```
 
 **3.3 Execute as migrations do banco e gere o Prisma Client:**
@@ -127,17 +132,24 @@ NODE_ENV=development
 .\node_modules\.bin\prisma generate
 ```
 
-**3.4 Inicie o servidor em modo desenvolvimento:**
+**3.4 Opcional: Popular base (Seed) de Superusuário ADMIN:**
+*(O seed cria automaticamente a conta admin@empresa.com / admin123)*
+
+```bash
+npx prisma db seed
+```
+
+**3.5 Inicie o servidor em modo desenvolvimento:**
 
 ```bash
 npm run start:dev
 ```
 
-✅ Backend disponível em: `http://localhost:3001/api/v1`
+🚀 Backend disponível em: `http://localhost:3001/api/v1`
 
 ---
 
-### 4. Frontend (Next.js — porta 3000)
+### 4. Frontend (Next.js – porta 3000)
 
 Abra um **novo terminal**:
 
@@ -165,7 +177,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
 npm run dev
 ```
 
-✅ Frontend disponível em: `http://localhost:3000`
+🌐 Frontend disponível em: `http://localhost:3000`
 
 ---
 
@@ -173,96 +185,89 @@ npm run dev
 
 ```
 helpdesk_com_ia/
-│
 ├── backend/
 │   ├── prisma/
-│   │   └── schema.prisma          # Modelos: Usuario, Chamado, Interacao, LogsAuditoria
-│   └── src/
+│   │   ├── schema.prisma          # Modelos: Usuario, Chamado, Interacao, LogsAuditoria
+│   │   └── seed.ts                # Inicializador de contas de superusuário (ADMIN)
+│   ├── src/
 │       ├── ai/                    # AiModule + AiService (integração Gemini)
 │       ├── auth/                  # AuthModule, JWT Strategy, Guards, Decorators
 │       ├── prisma/                # PrismaModule (singleton global)
 │       ├── tickets/               # TicketsModule (core business + RBAC)
-│       ├── users/                 # UsersModule (registro + /users/me)
-│       ├── app.module.ts
+│       ├── users/                 # UsersModule (/users/me e endpoints RBAC Invite-Only)
+│       ├── app.module.ts          # ThrottlerModule import (Rate Limiter global)
 │       └── main.ts
 │
 ├── frontend/
 │   ├── app/
 │   │   ├── layout.tsx             # RootLayout com AuthProvider
-│   │   ├── page.tsx               # Página principal
+│   │   ├── page.tsx               # Página principal (Dashboard único vertical)
 │   │   └── globals.css            # Design system / variáveis CSS
 │   ├── components/
 │   │   ├── ui/                    # Badge, Button, Card, Input
-│   │   ├── LoginForm.tsx
-│   │   ├── Navbar.tsx
-│   │   ├── TicketCreateForm.tsx   # Formulário minimalista (apenas Título + Descrição)
+│   │   ├── LoginForm.tsx          # Autenticação com UX handling amigável
+│   │   ├── Navbar.tsx             # Barra de navegação baseada em privilégios de conta
+│   │   ├── TicketCreateForm.tsx   # Formulário minimalista + captura limitação de quota (429)
 │   │   ├── TicketDetailModal.tsx  # Detalhes + auditoria + interações
+│   │   ├── UserManagementModal.tsx# Dashboard administrativo para gestão Invite-Only (Tabela)
 │   │   └── TicketList.tsx         # Fila com filtros e destaque de risco
 │   ├── context/
-│   │   └── AuthContext.tsx        # useAuth hook + gerenciamento de JWT
+│   │   └── AuthContext.tsx        # useAuth hook + gerenciamento assíncrono de JWT
 │   ├── hooks/
-│   │   └── useTickets.ts          # Hook customizado de chamados
+│   │   └── useTickets.ts          # Hook customizado de estados reativos dos chamados
 │   └── lib/
-│       ├── api.ts                 # Cliente HTTP tipado para o backend
-│       ├── types.ts               # Interfaces TypeScript (Chamado, Usuario, etc.)
-│       └── utils.ts               # Função cn() (clsx + tailwind-merge)
+│       ├── api.ts                 # HTTP Fetch wrapper com captura tratada de exceções
+│       ├── types.ts               # Interfaces TypeScript de domínio
+│       └── utils.ts               # Função utilitária cn() (clsx + tailwind-merge)
 │
 ├── PRD.md                         # Product Requirements Document
-├── TECH_SPEC.md                   # Especificação Técnica
-├── TASKS.md                       # Plano de execução (checklist)
-└── README.md                      # Este arquivo
+├── TECH_SPEC.md                   # Especificação Técnica e System Design
+├── TASKS.md                       # Plano de execução estrito
+└── README.md                      # Este documento
 ```
 
 ---
 
-## API — Endpoints Principais
+## API – Endpoints Principais
 
-| Método  | Rota                               | Perfil      | Descrição                                 |
-| ------- | ---------------------------------- | ----------- | ----------------------------------------- |
-| `POST`  | `/api/v1/users/register`           | Público     | Cadastro de novo usuário                  |
-| `POST`  | `/api/v1/auth/login`               | Público     | Login — retorna `access_token` JWT        |
-| `GET`   | `/api/v1/users/me`                 | Autenticado | Dados do usuário logado                   |
-| `POST`  | `/api/v1/tickets`                  | Autenticado | Abre chamado (aciona IA obrigatoriamente) |
-| `GET`   | `/api/v1/tickets`                  | Autenticado | Lista chamados (filtrada por perfil RBAC) |
-| `GET`   | `/api/v1/tickets/:id`              | Autenticado | Detalhes + interações + auditoria         |
-| `PATCH` | `/api/v1/tickets/:id/status`       | `TECNICO`   | Altera status e grava log de auditoria    |
-| `POST`  | `/api/v1/tickets/:id/interactions` | Autenticado | Adiciona mensagem/interação               |
+| Método  | Rota                               | Perfil Restrito       | Descrição                                 |
+| ------- | ---------------------------------- | --------------------- | ----------------------------------------- |
+| `POST`  | `/api/v1/auth/login`               | Público               | Autenticação – retorna `access_token` JWT   |
+| `GET`   | `/api/v1/users/me`                 | Autenticado           | Dados da própria sessão logada              |
+| `PATCH` | `/api/v1/users/me`                 | Autenticado           | Atualizar nome, e-mail e redefinir senha    |
+| `POST`  | `/api/v1/users`                    | `TECNICO` ou `ADMIN`  | Criação Invite-Only de novas contas       |
+| `GET`   | `/api/v1/users`                    | `TECNICO` ou `ADMIN`  | Tabela paginada do quadro de funcionários |
+| `DELETE`| `/api/v1/users/:id`                | EXCLUSIVO `ADMIN`     | Desligamento/exclusão definitiva de contas  |
+| `POST`  | `/api/v1/tickets`                  | Autenticado           | Abre chamado (aciona IA & Throttler limit)|
+| `GET`   | `/api/v1/tickets`                  | Autenticado           | Lista chamados (Query filtrada por RBAC)  |
+| `GET`   | `/api/v1/tickets/:id`              | Autenticado           | Detalhes + interações + trila de log      |
+| `PATCH` | `/api/v1/tickets/:id/status`       | `TECNICO` ou `ADMIN`  | Transita ciclo de vida e grava log imutável |
+| `POST`  | `/api/v1/tickets/:id/interactions` | Autenticado           | Adiciona mensagem/interação               |
 
 ---
 
 ## Fluxo de Triagem por IA
 
-```
-Usuário preenche Título + Descrição
+```text
+Usuário relata Incidente (Sem jargões técnicos)
         ↓
 POST /api/v1/tickets
         ↓
 TicketsService → AiService.analisarChamado(titulo, descricao)
         ↓
 Google Gemini API (gemini-3.8-flash)
-        ↓ (responseSchema estrito)
+        ↓ (Retorno garantido via responseSchema estrito)
 { categoria, prioridade, risco_seguranca }
         ↓
-Protocolo de Incidente Crítico?
-  ✅ Sim → força prioridade = "Critica", risco_seguranca = true
-  ❌ Não → usa resultado da IA diretamente
+Protocolo de Incidente Crítico ativado?
+  → Sim → Força Prioridade = "Critica" | Segurança = true (Alerta visual na fila)
+  → Não → Confia e adota classificação da Inteligência
         ↓
-Salva no PostgreSQL + registra LogsAuditoria
+Transação persistida no PostgreSQL + Inicialização da Trilha de Logs (Auditoria)
         ↓
-Retorna chamado criado para o frontend
+Feedback instantâneo (Verde/Vermelho) no formulário Next.js
 ```
 
 ---
 
-## Segurança
-
-- **Senhas**: jamais armazenadas em texto plano — hash gerado com `bcrypt` (12 rounds)
-- **JWT**: tokens com expiração de 8h assinados com `JWT_SECRET`
-- **API Key da IA**: exclusivamente no backend, nunca exposta ao frontend
-- **Validação**: `ValidationPipe` global com `whitelist: true` e `forbidNonWhitelisted: true`
-- **RBAC**: `RolesGuard` + decorator `@Roles()` bloqueiam endpoints sensíveis para perfil `COMUM`
-- **Resposta genérica**: erros de autenticação retornam mensagem única para evitar enumeração de usuários
-
----
-
-_Desenvolvido por Igor Martins Silva como projeto acadêmico do curso de Análise e Desenvolvimento de Sistemas._
+_Construído no fluxo da Engenharia de Software Moderna por Igor Martins Silva._
