@@ -169,6 +169,10 @@ O arquivo `frontend/.env.local` deve conter:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
+
+# Use 'development' para exibir os botões de atalho durante os testes locais.
+# Use 'production' (no ambiente de deploy) para ativar o modo Invite-Only e ocultar atalhos.
+NEXT_PUBLIC_ENV=development
 ```
 
 **4.3 Inicie o servidor de desenvolvimento:**
