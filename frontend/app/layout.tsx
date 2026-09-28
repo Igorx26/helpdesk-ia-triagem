@@ -3,7 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "Helpdesk de TI com Triagem Inteligente",
+  title: "Helpdesk de TI com IA",
   description: "Sistema corporativo de Helpdesk com categorização de IA e detecção de incidentes cibernéticos.",
 };
 
