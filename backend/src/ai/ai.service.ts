@@ -120,9 +120,9 @@ export class AiService {
   ): Promise<AiAnalysisResult> {
     // Fila de modelos: tenta o principal primeiro, depois os de backup em caso de 503
     const MODELOS_TENTATIVA = [
-      'gemini-3.8-flash',
-      'gemini-3.7-flash',
       'gemini-3.5-flash-lite',
+      'gemini-3.8-flash',
+      'gemini-3.7-flash'      
     ];
 
     const prompt = this.buildPrompt(titulo, descricao);
