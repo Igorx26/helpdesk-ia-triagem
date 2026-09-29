@@ -42,7 +42,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
 
   return (
     <Card className="border-slate-200 shadow-sm overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-blue-900 to-[#1E40AF] text-white">
+      <CardHeader className="bg-linear-to-r from-blue-900 to-[#1E40AF] text-white">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-amber-300" />
           <CardTitle className="text-white text-base">Abrir Novo Chamado de Suporte</CardTitle>
