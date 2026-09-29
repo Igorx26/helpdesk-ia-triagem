@@ -34,10 +34,17 @@ export function useTickets() {
   // Dispara fetch automaticamente quando o token/usuário ficam disponíveis
   useEffect(() => {
     if (user && token) {
-      void fetchTickets();
+      // O Promise.resolve() joga a execução para a fila de microtasks,
+      // evitando o erro de "setState síncrono" dentro do effect.
+      Promise.resolve().then(() => {
+        void fetchTickets();
+      });
     } else {
-      setTickets([]);
-      setIsLoading(false);
+      // Também evitamos a chamada síncrona direta aqui
+      Promise.resolve().then(() => {
+        setTickets([]);
+        setIsLoading(false);
+      });
     }
   }, [user, token, fetchTickets]);
 
