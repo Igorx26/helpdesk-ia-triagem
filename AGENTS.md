@@ -5,7 +5,8 @@
 *   **Frontend:** Next.js (App Router), React, Tailwind CSS, shadcn/ui.
 *   **Backend:** NestJS, TypeScript.
 *   **Banco de Dados:** PostgreSQL, ORM Prisma.
-*   **IA:** Integração EXCLUSIVA no backend com a API do Google Gemini (gemini-3.8-flash).
+*   **IA:** Integração com a API do Google Gemini. 
+*   **Regra de Estabilidade:** O sistema DEVE manter um array de fallback com múltiplos modelos (`gemini-3.5-flash-lite`, `gemini-3.8-flash`, `gemini-3.7-flash`), priorizando sempre o 3.5-flash-lite por questões de velocidade e menor taxa de erro. Não remova o fallback.
 
 ## 2. Padrões de Código
 *   Uso mandatório de **TypeScript** rigoroso em todo o sistema. Sem exceções (`any` deve ser evitado).
