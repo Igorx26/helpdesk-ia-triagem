@@ -27,3 +27,7 @@ Se houver solicitação de alteração nos modelos do banco de dados (Prisma):
 1. Altere o `schema.prisma`.
 2. Gere os artefatos locais.
 3. Não crie commits sem informar ou obter autorização caso a alteração afete tabelas core (`Chamado`, `Usuario`).
+
+## 6. Comandos Customizados
+Quando eu digitar um comando começando com barra (`/`), execute a seguinte ação:
+- `/review [caminhos_dos_arquivos...]`: Leia as regras em `strict-typescript-review.md` e o `AGENTS.md`, e aplique a refatoração rigorosa em todos os arquivos e pastas indicados, salvando-os no disco.
