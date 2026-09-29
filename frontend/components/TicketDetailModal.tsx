@@ -23,7 +23,7 @@ interface TicketDetailModalProps {
   ticket: Chamado;
   onClose: () => void;
   isTecnico: boolean;
-  onUpdateStatus: (id: string, status: StatusChamado) => Promise<void>;
+  onUpdateStatus: (id: string, status: StatusChamado) => Promise<void | Chamado>;
   onAddInteraction: (id: string, mensagem: string) => Promise<void>;
 }
 
