@@ -29,6 +29,7 @@ async function main() {
     console.log('Superuser ADMIN já existe.');
   }
 
+
   // 2. Criação do Usuário Técnico (Para o botão de Demo Local)
   const tecnicoEmail = 'igor@helpdesk.com';
   const existingTecnico = await prisma.usuario.findUnique({

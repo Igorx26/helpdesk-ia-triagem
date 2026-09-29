@@ -1,11 +1,12 @@
 import { SetMetadata } from '@nestjs/common';
+import type { Role } from '../interfaces/jwt-payload.interface.js';
 
 export const ROLES_KEY = 'roles';
 
 /**
- * Decorator that specifies which profiles can access a route.
- * Use together with RolesGuard.
- * @example @Roles('TECNICO')
+ * Decorator que restringe acesso baseado nos perfis de usuário.
+ * Utilizado em conjunto com o RolesGuard.
+ * @example @Roles('TECNICO', 'ADMIN')
  */
-export const Roles = (...roles: string[]): MethodDecorator & ClassDecorator =>
+export const Roles = (...roles: Role[]): MethodDecorator & ClassDecorator =>
   SetMetadata(ROLES_KEY, roles);

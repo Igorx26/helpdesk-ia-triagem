@@ -4,7 +4,7 @@
 async function testarFase4() {
   const baseUrl = 'http://localhost:3001/api/v1';
 
-  console.log('🚀 Iniciando testes funcionais da Fase 4 (Tickets)...\n');
+  console.log('µ Testando Fase 4 (Tickets)...\n');
 
   // 1. Cadastrar usuário Comum (se não existir) e Técnico
   const emailComum = `comum_${Date.now()}@helpdesk.com`;
@@ -53,9 +53,9 @@ async function testarFase4() {
       Authorization: `Bearer ${tokenComum}`,
     },
     body: JSON.stringify({
-      titulo: 'Mouse óptico parou de responder',
+      titulo: 'Mouse ñptico parou de responder',
       descricao:
-        'O mouse óptico USB parou de funcionar na minha estação. Testei em outras portas USB e não acende a luz.',
+        'O mouse ñptico USB parou de funcionar na minha estação. Testei em outras portas USB e não acende a luz.',
     }),
   });
   const ticketNormal = await resTicketNormal.json();
@@ -185,13 +185,13 @@ async function testarFase4() {
   console.log('Total de logs de auditoria:', detalhes.logs_auditoria.length);
   detalhes.logs_auditoria.forEach((log, idx) => {
     console.log(
-      `  Log #${idx + 1}: ${log.acao} por ${log.usuario.nome} ->`,
+      `Log #${idx + 1}: ${log.acao} por ${log.usuario.nome} ->`,
       JSON.stringify(log.detalhes),
     );
   });
   console.log('Total de interações:', detalhes.interacoes.length);
 
-  console.log('\n🎉 Todos os testes da Fase 4 foram executados com sucesso!');
+  console.log('\n𝔆T Todos os testes da Fase 4 foram executados com sucesso!');
 }
 
 testarFase4().catch((err) => {

@@ -85,7 +85,7 @@ async function testar(titulo, descricao, esperado, tentativas = 3) {
   }
 }
 
-console.log('🧪 Iniciando testes do AiService (gemini-3.5-flash)\n');
+console.log('🧪 Iniciando testes do AiService (gemini-3.5-flash-lite)\n');
 
 await testar(
   'Monitor não liga',

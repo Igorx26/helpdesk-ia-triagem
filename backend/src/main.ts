@@ -1,11 +1,11 @@
-﻿import { NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module.js';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
-  // ValidationPipe global -- intercepta todas as requisicoes, previne XSS e SQL Injection
+  // ValidationPipe global -- intercepta todas as requisições, previne XSS e SQL Injection
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -17,19 +17,21 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  // CORS -- em producao, FRONTEND_URL pode ser uma lista separada por virgula
-  // Ex: FRONTEND_URL=https://helpdesk.vercel.app,http://localhost:3000
-  // Para liberar tudo temporariamente: FRONTEND_URL=*
+  // CORS -- em produção, FRONTEND_URL pode ser uma lista separada por vírgula
   const rawOrigins = process.env.FRONTEND_URL ?? 'http://localhost:3000';
   const allowedOrigins = rawOrigins.split(',').map((o) => o.trim());
 
   app.enableCors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
       if (!origin) return callback(null, true);
+
       if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error(`CORS: origem nao permitida -- ${origin}`));
+      return callback(new Error(`CORS: origem não permitida -- ${origin}`));
     },
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -44,4 +46,4 @@ async function bootstrap(): Promise<void> {
   console.log(`Backend rodando em http://localhost:${port}/api/v1`);
 }
 
-await bootstrap();
+bootstrap();

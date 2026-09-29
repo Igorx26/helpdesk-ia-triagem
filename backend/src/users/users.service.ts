@@ -1,4 +1,4 @@
-﻿import {
+import {
   ConflictException,
   Injectable,
   NotFoundException,
@@ -6,9 +6,11 @@
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { UsuarioSafeDto, toUsuarioSafe } from './dto/usuario-safe.dto.js';
+import type { Role } from '../auth/interfaces/jwt-payload.interface.js';
 
 @Injectable()
 export class UsersService {
@@ -41,7 +43,15 @@ export class UsersService {
 
   async findAll(page: number, limit: number, search: string) {
     const skip = (page - 1) * limit;
-    const where = search ? { nome: { contains: search, mode: 'insensitive' as any } } : {};
+    
+    const where: Prisma.UsuarioWhereInput = search
+      ? {
+          nome: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        }
+      : {};
 
     const [total, usuarios] = await Promise.all([
       this.prisma.usuario.count({ where }),
@@ -75,7 +85,7 @@ export class UsersService {
     return toUsuarioSafe(usuario);
   }
 
-  async update(id: string, dto: UpdateUserDto, currentUserRole: string): Promise<UsuarioSafeDto> {
+  async update(id: string, dto: UpdateUserDto, currentUserRole: Role): Promise<UsuarioSafeDto> {
     const usuario = await this.prisma.usuario.findUnique({ where: { id } });
 
     if (!usuario) {
@@ -99,8 +109,11 @@ export class UsersService {
       if (existente) throw new ConflictException('Já existe um usuário com este e-mail.');
     }
 
-    const dataToUpdate: any = { ...dto };
-    delete dataToUpdate.senha;
+    const dataToUpdate: Prisma.UsuarioUpdateInput = {
+      ...(dto.nome && { nome: dto.nome }),
+      ...(dto.email && { email: dto.email }),
+      ...(dto.perfil && { perfil: dto.perfil }),
+    };
 
     if (dto.senha) {
       dataToUpdate.senha_hash = await bcrypt.hash(dto.senha, this.SALT_ROUNDS);

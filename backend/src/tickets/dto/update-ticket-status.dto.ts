@@ -11,7 +11,7 @@ export const STATUS_PERMITIDOS = [
 export type StatusChamado = (typeof STATUS_PERMITIDOS)[number];
 
 export class UpdateTicketStatusDto {
-  @IsNotEmpty({ message: 'O novo status é obrigatório.' })
+  @IsNotEmpty({ message: 'O novo status é obrigatorio.' })
   @IsIn(STATUS_PERMITIDOS, {
     message: `Status inválido. Valores permitidos: ${STATUS_PERMITIDOS.join(', ')}`,
   })

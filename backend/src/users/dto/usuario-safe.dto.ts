@@ -1,14 +1,15 @@
-import { Usuario } from '@prisma/client';
+import type { Usuario } from '@prisma/client';
+import type { Role } from '../../auth/interfaces/jwt-payload.interface.js';
 
 /**
- * Safe user object — never exposes senha_hash (as required by agent.md rule #3)
+ * Objeto de usuário seguro - nunca expõe a senha_hash (Regra de segurancga #3)
  */
-export interface UsuarioSafeDto {
-  id: string;
-  nome: string;
-  email: string;
-  perfil: string;
-  criado_em: Date;
+export class UsuarioSafeDto {
+  id!: string;
+  nome!: string;
+  email!: string;
+  perfil!: Role;
+  criado_em!: Date;
 }
 
 export function toUsuarioSafe(usuario: Usuario): UsuarioSafeDto {
@@ -16,7 +17,7 @@ export function toUsuarioSafe(usuario: Usuario): UsuarioSafeDto {
     id: usuario.id,
     nome: usuario.nome,
     email: usuario.email,
-    perfil: usuario.perfil,
+    perfil: usuario.perfil as Role,
     criado_em: usuario.criado_em,
   };
 }

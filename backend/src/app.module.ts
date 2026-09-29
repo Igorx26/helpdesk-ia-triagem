@@ -10,6 +10,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    // Rate Limiting global definido no módulo, restrito apenas a rotas específicas (@UseGuards)
+    // Conforme AGENTS.md, limite de 5 requisições por hora (3600000ms) para evitar DDoS na API de LLM.
     ThrottlerModule.forRoot([{ ttl: 3600000, limit: 5 }]),
     PrismaModule,
     UsersModule,

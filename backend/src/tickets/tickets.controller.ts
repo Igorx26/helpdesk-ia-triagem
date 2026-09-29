@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -33,7 +33,7 @@ export class TicketsController {
   }
 
   /**
-   * GET /api/v1/tickets - Lista chamados (Comum vê seus, Técnico vê todos)
+   * GET /api/v1/tickets - Lista chamados (Comum vê seus, Técnico/Admin veem todos)
    */
   @Get()
   async findAll(@CurrentUser() user: JwtPayload) {

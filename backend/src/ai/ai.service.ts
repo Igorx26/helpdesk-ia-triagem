@@ -1,6 +1,5 @@
 import {
   Injectable,
-  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +8,7 @@ import {
   HarmBlockThreshold,
   HarmCategory,
   SchemaType,
+  GenerateContentResult,
 } from '@google/generative-ai';
 import type {
   AiAnalysisResult,
@@ -20,24 +20,24 @@ import type {
  * Categorias e prioridades válidas conforme TECH_SPEC.md seção 3.
  * Usadas para validar e sanitizar o output da IA antes de persistir.
  */
-const CATEGORIAS_VALIDAS: CategoriaIA[] = [
+const CATEGORIAS_VALIDAS: ReadonlySet<CategoriaIA> = new Set([
   'Hardware',
   'Software',
   'Rede',
   'Seguranca',
-];
-const PRIORIDADES_VALIDAS: PrioridadeIA[] = [
+]);
+const PRIORIDADES_VALIDAS: ReadonlySet<PrioridadeIA> = new Set([
   'Baixa',
   'Media',
   'Alta',
   'Critica',
-];
+]);
 
 /**
  * Termos que ativam automaticamente o Protocolo de Incidente Crítico (PRD seção 3).
  * A IA já identifica esses padrões, mas esta lista serve como camada adicional de segurança.
  */
-const PALAVRAS_CHAVE_SEGURANCA = [
+const PALAVRAS_CHAVE_SEGURANCA: readonly string[] = [
   // Malware e Ransomware
   'ransomware',
   'malware',
@@ -100,7 +100,7 @@ export class AiService {
   private readonly genAI: GoogleGenerativeAI;
 
   constructor(private readonly configService: ConfigService) {
-    const apiKey = this.configService.get<string>('GEMINI_API_KEY') ?? '';
+    const apiKey: string = this.configService.get<string>('GEMINI_API_KEY') ?? '';
     if (!apiKey) {
       this.logger.warn(
         '⚠️  GEMINI_API_KEY não configurada. O AiService usará o fallback de segurança.',
@@ -118,14 +118,14 @@ export class AiService {
     titulo: string,
     descricao: string,
   ): Promise<AiAnalysisResult> {
-    // Fila de modelos: tenta o principal primeiro, depois os de backup em caso de 503
-    const MODELOS_TENTATIVA = [
+    // Regra de Estabilidade (AGENTS.md): Múltiplos modelos priorizando 3.5-flash-lite
+    const MODELOS_TENTATIVA: readonly string[] = [
       'gemini-3.5-flash-lite',
       'gemini-3.8-flash',
-      'gemini-3.7-flash'      
+      'gemini-3.7-flash',
     ];
 
-    const prompt = this.buildPrompt(titulo, descricao);
+    const prompt: string = this.buildPrompt(titulo, descricao);
 
     for (const modelName of MODELOS_TENTATIVA) {
       try {
@@ -175,9 +175,9 @@ export class AiService {
           ],
         });
 
-        const requestPromise = model.generateContent(prompt);
+        const requestPromise: Promise<GenerateContentResult> = model.generateContent(prompt);
 
-        // Cria um cronômetro fatal de 8 segundos
+        // Cria um cronômetro fatal de 10 segundos
         const timeoutPromise = new Promise<never>((_, reject) =>
           setTimeout(
             () =>
@@ -189,20 +189,19 @@ export class AiService {
         );
 
         // O Node.js executa ambas simultaneamente. A que terminar primeiro (a resposta ou o cronômetro) vence.
-        const result = (await Promise.race([
+        const result: GenerateContentResult = await Promise.race([
           requestPromise,
           timeoutPromise,
-        ])) as any;
-        const rawText = result.response.text();
+        ]);
+        const rawText: string = result.response.text();
 
         this.logger.debug(`Resposta bruta da IA (${modelName}): ${rawText}`);
 
-        const parsed = JSON.parse(rawText) as Partial<AiAnalysisResult>;
-        return this.validarEAplicarProtocoloCritico(parsed, descricao);
-      } catch (error) {
-        this.logger.warn(
-          `Falha na análise com ${modelName}: ${error instanceof Error ? error.message : String(error)}`,
-        );
+        const parsed: unknown = JSON.parse(rawText);
+        return this.validarEAplicarProtocoloCritico(parsed as Partial<AiAnalysisResult>, descricao);
+      } catch (error: unknown) {
+        const errorMessage: string = error instanceof Error ? error.message : String(error);
+        this.logger.warn(`Falha na análise com ${modelName}: ${errorMessage}`);
         // O loop continua para o próximo modelo do array
       }
     }
@@ -256,13 +255,13 @@ Retorne APENAS o JSON com os campos: categoria, prioridade, risco_seguranca.
     parsed: Partial<AiAnalysisResult>,
     descricao: string,
   ): AiAnalysisResult {
-    const categoria: CategoriaIA = CATEGORIAS_VALIDAS.includes(
+    const categoria: CategoriaIA = CATEGORIAS_VALIDAS.has(
       parsed.categoria as CategoriaIA,
     )
       ? (parsed.categoria as CategoriaIA)
       : 'Software'; // fallback padrão
 
-    let prioridade: PrioridadeIA = PRIORIDADES_VALIDAS.includes(
+    let prioridade: PrioridadeIA = PRIORIDADES_VALIDAS.has(
       parsed.prioridade as PrioridadeIA,
     )
       ? (parsed.prioridade as PrioridadeIA)

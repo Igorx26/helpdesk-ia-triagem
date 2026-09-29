@@ -6,8 +6,8 @@ export class CreateTicketDto {
   @MaxLength(150, { message: 'O título deve ter no máximo 150 caracteres.' })
   titulo!: string;
 
-  @IsNotEmpty({ message: 'A descrição do chamado é obrigatória.' })
+  @IsNotEmpty({ message: 'A descriação do chamado é obrigatória.' })
   @IsString()
-  @MinLength(10, { message: 'A descrição deve ter pelo menos 10 caracteres.' })
+  @MinLength(10, { message: 'A descriação deve ter pelo menos 10 caracteres.' })
   descricao!: string;
 }

@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { LoginResponseDto } from './dto/login-response.dto.js';
-import { JwtPayload } from './interfaces/jwt-payload.interface.js';
+import type { JwtPayload, Role } from './interfaces/jwt-payload.interface.js';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     const usuario = await this.usersService.findByEmail(dto.email);
 
     if (!usuario) {
-      // Mensagem genérica para não revelar se o e-mail existe no sistema
+      // Mensagem genérica para não revelar se o e-mail e|iste no sistema
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
@@ -30,7 +30,7 @@ export class AuthService {
     const payload: JwtPayload = {
       sub: usuario.id,
       email: usuario.email,
-      perfil: usuario.perfil,
+      perfil: usuario.perfil as Role,
     };
 
     const access_token = await this.jwtService.signAsync(payload);
@@ -41,7 +41,7 @@ export class AuthService {
         id: usuario.id,
         nome: usuario.nome,
         email: usuario.email,
-        perfil: usuario.perfil,
+        perfil: usuario.perfil as Role,
       },
     };
   }
