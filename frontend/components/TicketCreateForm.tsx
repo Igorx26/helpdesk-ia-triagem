@@ -1,11 +1,13 @@
-﻿"use client";
+"use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { Input, Textarea } from "./ui/Input";
 import { Sparkles, ShieldAlert, Send, CheckCircle2 } from "lucide-react";
-import { Chamado } from "@/lib/types";
+import type { Chamado } from "@/lib/types";
+
+// --- Tipos -------------------------------------------------------------------
 
 interface TicketCreateFormProps {
   onTicketCreated: (ticket: Chamado) => void;
@@ -13,13 +15,15 @@ interface TicketCreateFormProps {
   onSubmitTicket: (titulo: string, descricao: string) => Promise<Chamado>;
 }
 
+// --- Componente --------------------------------------------------------------
+
 export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket }: TicketCreateFormProps) {
-  const [titulo, setTitulo] = useState("");
-  const [descricao, setDescricao] = useState("");
+  const [titulo, setTitulo] = useState<string>("");
+  const [descricao, setDescricao] = useState<string>("");
   const [lastCreated, setLastCreated] = useState<Chamado | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!titulo.trim() || !descricao.trim()) return;
 
@@ -30,8 +34,9 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
       setTitulo("");
       setDescricao("");
       onTicketCreated(ticket);
-    } catch (err: any) {
-      setErrorMessage(err.message || "Falha ao processar abertura de chamado");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Falha ao processar abertura de chamado";
+      setErrorMessage(message);
     }
   };
 
@@ -48,6 +53,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
       </CardHeader>
 
       <CardContent className="p-6">
+        {/* Banner de confirmação de chamado aberto com resultado da triagem da IA */}
         {lastCreated && (
           <div
             className={`mb-6 p-4 rounded-xl border flex items-start gap-3 transition-all ${
@@ -70,14 +76,14 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
               </p>
               {lastCreated.risco_seguranca && (
                 <p className="font-bold text-[#DC2626]">
-                  🚨 Protocolo de Incidente Crítico ativado: ameaça cibernética identificada e priorizada para resposta
-                  imediata.
+                  🚨 Protocolo de Incidente Crítico ativado: ameaça cibernética identificada e priorizada para resposta imediata.
                 </p>
               )}
             </div>
           </div>
         )}
 
+        {/* Alerta de erro ao criar chamado */}
         {errorMessage && (
           <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-semibold text-red-700 flex items-start gap-2">
             <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
@@ -85,7 +91,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
           </div>
         )}
 
-        {/* Minimalist form strictly requiring ONLY Title and Description */}
+        {/* Formulário minimalista: apenas Título e Descrição — a IA cuida do resto */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <label htmlFor="ticket-title" className="text-xs font-bold text-slate-700 uppercase tracking-wider">

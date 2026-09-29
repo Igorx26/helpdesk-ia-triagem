@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
   description: "Sistema corporativo de Helpdesk com categorização de IA e detecção de incidentes cibernéticos.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR" className="h-full">
       <body className="min-h-full flex flex-col bg-[#F1F5F9] text-slate-900 antialiased">

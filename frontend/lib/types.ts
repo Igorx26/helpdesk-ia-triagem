@@ -32,7 +32,11 @@ export interface LogAuditoria {
   id_chamado: string;
   id_usuario: string;
   acao: string;
-  detalhes: Record<string, any>;
+  /**
+   * Mapa livre de detalhes do log de auditoria vindo do backend.
+   * Tipado como Record<string, unknown> para forçar narrowing explícito nos consumidores.
+   */
+  detalhes: Record<string, unknown>;
   criado_em: string;
   usuario: {
     id: string;

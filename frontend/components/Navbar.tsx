@@ -1,23 +1,31 @@
-﻿"use client";
+"use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/Button";
 import { Bot, LogOut, User as UserIcon, Shield, Users, Settings } from "lucide-react";
 import { UserManagementModal } from "./UserManagementModal";
 import { UserProfileModal } from "./UserProfileModal";
+import type { PerfilUsuario } from "@/lib/types";
+
+// --- Constantes --------------------------------------------------------------
+
+/** Perfis com acesso ao painel de gestão de usuários. */
+const PERFIS_COM_GESTAO: ReadonlySet<PerfilUsuario> = new Set(["TECNICO", "ADMIN"]);
+
+// --- Componente --------------------------------------------------------------
 
 export function Navbar() {
   const { user, logout } = useAuth();
-  const [isManageModalOpen, setIsManageModalOpen] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isManageModalOpen, setIsManageModalOpen] = useState<boolean>(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 
   if (!user) return null;
 
-  const isTecnico = user.perfil === "TECNICO";
-  const isAdmin = user.perfil === "ADMIN";
-  const isComum = user.perfil === "COMUM";
-  const canManageUsers = isAdmin || isTecnico;
+  const isAdmin: boolean = user.perfil === "ADMIN";
+  const isTecnico: boolean = user.perfil === "TECNICO";
+  const isComum: boolean = user.perfil === "COMUM";
+  const canManageUsers: boolean = PERFIS_COM_GESTAO.has(user.perfil);
 
   return (
     <>
@@ -29,7 +37,7 @@ export function Navbar() {
             </div>
             <div>
               <h1 className="font-bold text-lg leading-tight tracking-tight">Helpdesk TI</h1>
-              <p className="text-xs text-blue-200">Triagem Inteligente & Auditoria</p>
+              <p className="text-xs text-blue-200">Triagem Inteligente &amp; Auditoria</p>
             </div>
           </div>
 

@@ -1,62 +1,93 @@
-﻿"use client";
+"use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getUsersApi, createUserApi, updateUserApi, deleteUserApi } from "@/lib/api";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
-import { X, Search, Edit2, Trash2, Shield, User, Users } from "lucide-react";
+import { X, Search, Edit2, Trash2, Users } from "lucide-react";
+import type { Usuario, PerfilUsuario } from "@/lib/types";
 
-export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+// --- Tipos -------------------------------------------------------------------
+
+interface UserManagementModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+/** Payload de criação/edição enviado à API de usuários. */
+interface UserPayload {
+  nome: string;
+  email: string;
+  perfil: PerfilUsuario;
+  senha?: string;
+}
+
+/** Resposta paginada da API de listagem de usuários. */
+interface PaginatedUsers {
+  data: Usuario[];
+  total: number;
+}
+
+/** Estado do feedback de formulário (sucesso ou erro). */
+interface FormMessage {
+  text: string;
+  type: "success" | "error" | "";
+}
+
+// --- Componente --------------------------------------------------------------
+
+export function UserManagementModal({ isOpen, onClose }: UserManagementModalProps) {
   const { user: currentUser } = useAuth();
-  
-  const [users, setUsers] = useState<any[]>([]);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Form states
-  const [isEditing, setIsEditing] = useState(false);
-  const [editId, setEditId] = useState("");
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [perfil, setPerfil] = useState<"COMUM" | "TECNICO" | "ADMIN">("COMUM");
+  const [users, setUsers] = useState<Usuario[]>([]);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const [search, setSearch] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [message, setMessage] = useState({ text: "", type: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Estados do formulário de criação/edição
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editId, setEditId] = useState<string>("");
+  const [nome, setNome] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [senha, setSenha] = useState<string>("");
+  const [perfil, setPerfil] = useState<PerfilUsuario>("COMUM");
 
-  const fetchUsers = async () => {
+  const [message, setMessage] = useState<FormMessage>({ text: "", type: "" });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const fetchUsers = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const data = await getUsersApi(page, 10, search);
+      const data: PaginatedUsers = await getUsersApi(page, 10, search);
       setUsers(data.data);
       setTotalUsers(data.total);
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
+      console.error("Falha ao carregar usuários:", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, search]);
 
   useEffect(() => {
     if (isOpen) {
-      fetchUsers();
+      void fetchUsers();
     }
-  }, [isOpen, page, search]);
+  }, [isOpen, fetchUsers]);
 
   if (!isOpen || !currentUser) return null;
-  const isTecnico = currentUser.perfil === "TECNICO";
-  const isAdmin = currentUser.perfil === "ADMIN";
 
-  const handleSearch = (e: React.FormEvent) => {
+  const isTecnico: boolean = currentUser.perfil === "TECNICO";
+  const isAdmin: boolean = currentUser.perfil === "ADMIN";
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     setPage(1);
-    fetchUsers();
+    void fetchUsers();
   };
 
-  const handleCreateNew = () => {
+  const handleCreateNew = (): void => {
     setIsEditing(false);
     setEditId("");
     setNome("");
@@ -66,7 +97,7 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
     setMessage({ text: "", type: "" });
   };
 
-  const handleEdit = (u: any) => {
+  const handleEdit = (u: Usuario): void => {
     setIsEditing(true);
     setEditId(u.id);
     setNome(u.nome);
@@ -76,21 +107,19 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
     setMessage({ text: "", type: "" });
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage({ text: "", type: "" });
 
     try {
-      const payload: any = { nome, email };
+      const payload: UserPayload = {
+        nome,
+        email,
+        // Técnico só pode criar perfil COMUM
+        perfil: isTecnico && !isEditing ? "COMUM" : perfil,
+      };
       if (senha) payload.senha = senha;
-      
-      // Técnico force COMUM on create
-      if (isTecnico && !isEditing) {
-        payload.perfil = "COMUM";
-      } else {
-        payload.perfil = perfil;
-      }
 
       if (isEditing) {
         await updateUserApi(editId, payload);
@@ -98,24 +127,26 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
       } else {
         await createUserApi(payload);
         setMessage({ text: "Usuário criado com sucesso!", type: "success" });
-        handleCreateNew(); // reset form
+        handleCreateNew();
       }
-      fetchUsers();
-    } catch (error: any) {
-      setMessage({ text: error.message, type: "error" });
+      void fetchUsers();
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Erro desconhecido";
+      setMessage({ text: msg, type: "error" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string): Promise<void> => {
     if (!isAdmin) return;
     if (!confirm("Tem certeza que deseja excluir este usuário? Esta ação é irreversível.")) return;
     try {
       await deleteUserApi(id);
-      fetchUsers();
-    } catch (err: any) {
-      alert(err.message);
+      void fetchUsers();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Erro ao excluir usuário";
+      alert(msg);
     }
   };
 
@@ -124,7 +155,7 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
-        {/* Header */}
+        {/* Cabeçalho */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -133,13 +164,13 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
             </h2>
             <p className="text-xs text-slate-500">Adicione, edite ou remova usuários do sistema.</p>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-full">
+          <button onClick={onClose} aria-label="Fechar modal" className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-full">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 flex flex-col lg:flex-row gap-6">
-          {/* List Section */}
+          {/* Seção de listagem */}
           <div className="flex-1 flex flex-col gap-4 order-2 lg:order-1">
             <form onSubmit={handleSearch} className="flex gap-2">
               <div className="relative flex-1">
@@ -179,8 +210,8 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
                           </td>
                           <td className="px-4 py-3">
                             <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
-                              u.perfil === 'ADMIN' ? 'bg-red-100 text-red-700' :
-                              u.perfil === 'TECNICO' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
+                              u.perfil === "ADMIN" ? "bg-red-100 text-red-700" :
+                              u.perfil === "TECNICO" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
                             }`}>
                               {u.perfil}
                             </span>
@@ -193,7 +224,7 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
                                 </button>
                               )}
                               {isAdmin && u.id !== currentUser.id && (
-                                <button onClick={() => handleDelete(u.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Excluir">
+                                <button onClick={() => void handleDelete(u.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Excluir">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               )}
@@ -207,59 +238,59 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
               </table>
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-between items-center text-xs text-slate-500">
                 <span>Página {page} de {totalPages}</span>
                 <div className="flex gap-1">
-                  <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>Anterior</Button>
-                  <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Próxima</Button>
+                  <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>Anterior</Button>
+                  <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Próxima</Button>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Form Section */}
+          {/* Seção de formulário */}
           <div className="w-full lg:w-80 flex flex-col gap-4 order-1 lg:order-2">
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-slate-800 text-sm">{isEditing ? "Alterar Usuário" : "Novo Usuário"}</h3>
                 {isEditing && (
-                  <Button variant="ghost" size="sm" onClick={handleCreateNew} className="h-7 text-[10px] uppercase">
-                    Cancelar
-                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleCreateNew} className="h-7 text-[10px] uppercase">Cancelar</Button>
                 )}
               </div>
 
               {message.text && (
-                <div className={`p-2.5 mb-4 rounded text-xs font-medium ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                <div className={`p-2.5 mb-4 rounded text-xs font-medium ${message.type === "error" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
                   {message.text}
                 </div>
               )}
 
               <form onSubmit={handleSave} className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Nome</label>
-                  <Input required value={nome} onChange={(e) => setNome(e.target.value)} className="h-9 text-sm" placeholder="Nome completo" />
-                </div>
-                
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">E-mail</label>
-                  <Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-9 text-sm" placeholder="email@empresa.com" />
+                  <label htmlFor="mgmt-nome" className="text-xs font-semibold text-slate-700">Nome</label>
+                  <Input id="mgmt-nome" required value={nome} onChange={(e) => setNome(e.target.value)} className="h-9 text-sm" placeholder="Nome completo" />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Senha {isEditing && <span className="text-slate-400 font-normal">(deixe em branco para não alterar)</span>}</label>
-                  <Input type="password" required={!isEditing} minLength={6} value={senha} onChange={(e) => setSenha(e.target.value)} className="h-9 text-sm" placeholder="Mínimo 6 caracteres" />
+                  <label htmlFor="mgmt-email" className="text-xs font-semibold text-slate-700">E-mail</label>
+                  <Input id="mgmt-email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-9 text-sm" placeholder="email@empresa.com" />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Perfil de Acesso</label>
+                  <label htmlFor="mgmt-senha" className="text-xs font-semibold text-slate-700">
+                    Senha {isEditing && <span className="text-slate-400 font-normal">(deixe em branco para não alterar)</span>}
+                  </label>
+                  <Input id="mgmt-senha" type="password" required={!isEditing} minLength={6} value={senha} onChange={(e) => setSenha(e.target.value)} className="h-9 text-sm" placeholder="Mínimo 6 caracteres" />
+                </div>
+
+                <div className="space-y-1">
+                  <label htmlFor="mgmt-perfil" className="text-xs font-semibold text-slate-700">Perfil de Acesso</label>
                   {isAdmin ? (
                     <select
+                      id="mgmt-perfil"
                       className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
                       value={perfil}
-                      onChange={(e) => setPerfil(e.target.value as any)}
+                      onChange={(e) => setPerfil(e.target.value as PerfilUsuario)}
                     >
                       <option value="COMUM">COMUM - Portal Restrito</option>
                       <option value="TECNICO">TÉCNICO - Visão Global</option>
@@ -278,7 +309,6 @@ export function UserManagementModal({ isOpen, onClose }: { isOpen: boolean; onCl
               </form>
             </div>
           </div>
-
         </div>
       </div>
     </div>

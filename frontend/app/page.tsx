@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useTickets } from "@/hooks/useTickets";
 import { Navbar } from "@/components/Navbar";
@@ -8,9 +8,16 @@ import { LoginForm } from "@/components/LoginForm";
 import { TicketCreateForm } from "@/components/TicketCreateForm";
 import { TicketList } from "@/components/TicketList";
 import { TicketDetailModal } from "@/components/TicketDetailModal";
-import { Chamado } from "@/lib/types";
-import { Shield, PlusCircle, RefreshCw, AlertTriangle } from "lucide-react";
+import type { PerfilUsuario } from "@/lib/types";
+import { Shield, PlusCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+
+// --- Constantes --------------------------------------------------------------
+
+/** Perfis com acesso privilegiado à visão técnica global de chamados. */
+const PERFIS_PRIVILEGIADOS: ReadonlySet<PerfilUsuario> = new Set(["TECNICO", "ADMIN"]);
+
+// --- Componente --------------------------------------------------------------
 
 export default function HomePage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -27,8 +34,9 @@ export default function HomePage() {
     addInteraction,
   } = useTickets();
 
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
 
+  // --- Estado de carregamento da sessão ---
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F1F5F9]">
@@ -40,18 +48,19 @@ export default function HomePage() {
     );
   }
 
+  // --- Usuário não autenticado: exibe tela de login ---
   if (!user) {
     return <LoginForm />;
   }
 
-  const isTecnico = user.perfil === "TECNICO" || user.perfil === "ADMIN";
+  const isTecnico: boolean = PERFIS_PRIVILEGIADOS.has(user.perfil);
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex flex-col">
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Top Control Bar */}
+        {/* Barra de controle superior */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <div className="space-y-0.5">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -93,15 +102,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Layout Stacked Vertically */}
+        {/* Layout empilhado verticalmente */}
         <div className="flex flex-col gap-6">
-          {/* Create Form */}
+          {/* Formulário de criação */}
           {showCreateForm && (
             <div className="w-full max-w-4xl mx-auto">
               <TicketCreateForm
                 onSubmitTicket={createTicket}
                 isSubmitting={isSubmitting}
-                onTicketCreated={(ticket) => {
+                onTicketCreated={() => {
                   fetchTickets();
                   setShowCreateForm(false);
                 }}
@@ -109,12 +118,12 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Ticket List Queue */}
+          {/* Fila de chamados */}
           <div className="w-full">
             <TicketList
               tickets={tickets}
               isLoading={ticketsLoading}
-              onSelectTicket={(id) => selectTicket(id)}
+              onSelectTicket={selectTicket}
               selectedTicketId={selectedTicket?.id}
               isTecnico={isTecnico}
             />
@@ -122,7 +131,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Ticket Details and Interactions Modal */}
+      {/* Modal de detalhes e interações do chamado */}
       {selectedTicket && (
         <TicketDetailModal
           ticket={selectedTicket}
