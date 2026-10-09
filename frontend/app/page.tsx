@@ -60,11 +60,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#F1F5F9] flex flex-col">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Barra de controle superior */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <div className="space-y-0.5">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <div className="space-y-0.5 min-w-0">
+            <h2 className="text-lg font-bold text-slate-900 flex flex-wrap items-center gap-x-2 gap-y-1">
               <span>{isTecnico ? "Console Operacional de Suporte" : "Portal do Colaborador"}</span>
               {isTecnico && (
                 <span className="text-xs px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 font-medium border border-purple-200">
@@ -79,13 +79,13 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:shrink-0">
             <Button
               variant="outline"
               size="sm"
               onClick={fetchTickets}
               disabled={ticketsLoading}
-              className="gap-1.5 text-xs"
+              className="w-full sm:w-auto whitespace-nowrap gap-1.5 text-xs"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${ticketsLoading ? "animate-spin" : ""}`} />
               Atualizar Fila
@@ -95,7 +95,7 @@ export default function HomePage() {
               variant={showCreateForm ? "outline" : "accent"}
               size="sm"
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="gap-1.5 text-xs"
+              className="w-full sm:w-auto whitespace-nowrap gap-1.5 text-xs"
             >
               <PlusCircle className="w-3.5 h-3.5" />
               {showCreateForm ? "Ocultar Formulário" : "Novo Chamado"}

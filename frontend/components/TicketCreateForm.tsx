@@ -42,9 +42,9 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
 
   return (
     <Card className="border-slate-200 shadow-sm overflow-hidden">
-      <CardHeader className="bg-linear-to-r from-blue-900 to-[#1E40AF] text-white">
+      <CardHeader className="p-4 sm:p-6 bg-linear-to-r from-blue-900 to-[#1E40AF] text-white">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-300" />
+          <Sparkles className="w-5 h-5 shrink-0 text-amber-300" />
           <CardTitle className="text-white text-base">Abrir Novo Chamado de Suporte</CardTitle>
         </div>
         <CardDescription className="text-blue-100 text-xs">
@@ -52,11 +52,11 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         {/* Banner de confirmação de chamado aberto com resultado da triagem da IA */}
         {lastCreated && (
           <div
-            className={`mb-6 p-4 rounded-xl border flex items-start gap-3 transition-all ${
+            className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl border flex items-start gap-3 transition-all ${
               lastCreated.risco_seguranca
                 ? "bg-red-50 border-red-200 text-red-900"
                 : "bg-emerald-50 border-emerald-200 text-emerald-900"
@@ -67,7 +67,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
             ) : (
               <CheckCircle2 className="w-5 h-5 text-[#16A34A] shrink-0 mt-0.5" />
             )}
-            <div className="text-xs space-y-1">
+            <div className="text-xs space-y-1 min-w-0 break-words break-all">
               <p className="font-semibold text-sm">Chamado aberto com sucesso! #{lastCreated.id.substring(0, 8)}</p>
               <p>
                 <strong>Triagem da IA:</strong> Categoria{" "}
@@ -127,7 +127,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
             </p>
           </div>
 
-          <div className="pt-2 flex items-center justify-between">
+          <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-1.5 text-xs text-slate-500">
               <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>Triagem com Gemini LLM ativada</span>
@@ -138,7 +138,7 @@ export function TicketCreateForm({ onTicketCreated, isSubmitting, onSubmitTicket
               variant="primary"
               isLoading={isSubmitting}
               disabled={!titulo.trim() || !descricao.trim()}
-              className="gap-2"
+              className="w-full sm:w-auto gap-2"
             >
               <Send className="w-4 h-4" />
               Enviar Chamado

@@ -73,11 +73,11 @@ export function TicketList({
 
   return (
     <Card className="border-slate-200 shadow-sm">
-      <CardHeader className="pb-3 border-b border-slate-100">
+      <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-3 border-b border-slate-100">
         {/* Título + badge de ameaças ativas */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <CardTitle className="text-base flex items-center gap-2">
+          <div className="min-w-0">
+            <CardTitle className="text-base flex flex-wrap items-center gap-2">
               <span>{isTecnico ? "Fila Global de Chamados" : "Meus Chamados"}</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-normal">
                 {filteredTickets.length} total
@@ -92,7 +92,7 @@ export function TicketList({
 
           {/* Aviso de ameaça crítica — some quando todas as ameaças estão resolvidas */}
           {activeSecurityIncidents.length > 0 && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-100/80 border border-red-300 text-red-800 text-xs font-semibold">
+            <div className="self-start sm:self-auto shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-100/80 border border-red-300 text-red-800 text-xs font-semibold">
               <ShieldAlert className="w-4 h-4 text-[#DC2626]" />
               <span>
                 {activeSecurityIncidents.length}{" "}
@@ -117,22 +117,22 @@ export function TicketList({
           </div>
 
           {/* Filtro por data */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 w-full sm:w-auto sm:shrink-0">
             <CalendarDays className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
               title="Data inicial"
-              className="h-9 px-2 rounded-lg border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E40AF] text-slate-700 cursor-pointer"
+              className="flex-1 min-w-0 sm:flex-none h-9 px-2 rounded-lg border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E40AF] text-slate-700 cursor-pointer"
             />
-            <span className="text-xs text-slate-400">até</span>
+            <span className="shrink-0 text-xs text-slate-400">até</span>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
               title="Data final"
-              className="h-9 px-2 rounded-lg border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E40AF] text-slate-700 cursor-pointer"
+              className="flex-1 min-w-0 sm:flex-none h-9 px-2 rounded-lg border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E40AF] text-slate-700 cursor-pointer"
             />
             {(dateFrom || dateTo) && (
               <button
@@ -140,7 +140,7 @@ export function TicketList({
                   setDateFrom("");
                   setDateTo("");
                 }}
-                className="h-9 px-2 text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                className="shrink-0 h-9 px-2 text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200 transition-colors cursor-pointer"
                 title="Limpar filtro de data"
               >
                 ✕
@@ -150,7 +150,7 @@ export function TicketList({
         </div>
 
         {/* Linha 2 de filtros: botões de status com contagem */}
-        <div className="pt-2 flex items-center gap-1.5 overflow-x-auto pb-1">
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 pt-2 pb-1 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x min-w-0">
           <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:block" />
           {STATUS_CONFIG.map(({ key, label }) => {
             const count = countByStatus[key] ?? 0;
@@ -159,7 +159,7 @@ export function TicketList({
               <button
                 key={key}
                 onClick={() => setStatusFilter(key)}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                className={`shrink-0 snap-start px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
                   isActive ? "bg-[#1E40AF] text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-600"
                 }`}
               >
@@ -181,12 +181,12 @@ export function TicketList({
 
       <CardContent className="p-0">
         {isLoading ? (
-          <div className="p-12 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
+          <div className="p-8 sm:p-12 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#1E40AF]" />
             Carregando chamados...
           </div>
         ) : filteredTickets.length === 0 ? (
-          <div className="p-12 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
+          <div className="p-8 sm:p-12 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
             <Inbox className="w-8 h-8 text-slate-300" />
             <span>Nenhum chamado encontrado com os filtros selecionados.</span>
           </div>
@@ -201,7 +201,7 @@ export function TicketList({
                 <div
                   key={ticket.id}
                   onClick={() => !isThisTicketLoading && onSelectTicket(ticket.id)}
-                  className={`p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 ${
+                  className={`p-3 sm:p-4 transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 hover:bg-slate-50/80 ${
                     isThisTicketLoading ? "opacity-70 cursor-wait" : "cursor-pointer"
                   } ${isSelected ? "bg-blue-50/70 border-l-4 border-[#1E40AF]" : ""} ${
                     hasSecurityThreat && !isSelected && ticket.status !== "RESOLVIDO"
@@ -209,7 +209,7 @@ export function TicketList({
                       : ""
                   }`}
                 >
-                  <div className="space-y-1.5 flex-1 min-w-0 pr-2">
+                  <div className="space-y-1.5 flex-1 min-w-0 sm:pr-2">
                     <div className="flex items-center gap-2 flex-wrap">
                       <SecurityRiskBadge hasRisk={hasSecurityThreat} />
                       <CategoryBadge categoria={ticket.categoria} />
@@ -221,11 +221,11 @@ export function TicketList({
 
                     <p className="text-xs text-slate-500 line-clamp-2">{ticket.descricao}</p>
 
-                    <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1">
-                      <span>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400 pt-1">
+                      <span className="min-w-0 truncate">
                         Por: <strong className="text-slate-600 font-medium">{ticket.solicitante.nome}</strong>
                       </span>
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 shrink-0">
                         <Clock className="w-3 h-3" />
                         {new Date(ticket.criado_em).toLocaleString("pt-BR", {
                           day: "2-digit",
@@ -237,12 +237,12 @@ export function TicketList({
                     </div>
                   </div>
 
-                  <div className="flex items-center sm:self-center shrink-0">
+                  <div className="flex items-center justify-end self-stretch sm:self-center shrink-0">
                     <Button
                       variant="ghost"
                       size="sm"
                       disabled={isThisTicketLoading}
-                      className="text-xs text-[#1E40AF] hover:text-[#1D4ED8] gap-1 p-1 h-auto disabled:opacity-100"
+                      className="shrink-0 whitespace-nowrap text-xs text-[#1E40AF] hover:text-[#1D4ED8] gap-1 px-2 py-1.5 sm:p-1 h-auto disabled:opacity-100"
                     >
                       {isThisTicketLoading ? (
                         <>

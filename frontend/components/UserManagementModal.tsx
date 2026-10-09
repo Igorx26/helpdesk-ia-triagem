@@ -153,7 +153,7 @@ export function UserManagementModal({ isOpen, onClose }: UserManagementModalProp
   const totalPages = Math.ceil(totalUsers / 10);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Cabeçalho */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
