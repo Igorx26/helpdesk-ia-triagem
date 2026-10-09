@@ -13,7 +13,7 @@ export function useTickets() {
   const [tickets, setTickets] = useState<Chamado[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Chamado | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isTicketLoading, setIsTicketLoading] = useState<boolean>(false);
+  const [loadingTicketId, setLoadingTicketId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,7 +51,7 @@ export function useTickets() {
 
   // Carrega o detalhe completo de um chamado (com interações e logs de auditoria)
   const selectTicket = async (id: string): Promise<void> => {
-    setIsTicketLoading(true);
+    setLoadingTicketId(id);
     try {
       const data = await getTicketByIdApi(id);
       setSelectedTicket(data);
@@ -59,7 +59,7 @@ export function useTickets() {
       const message = err instanceof Error ? err.message : "Erro ao carregar detalhes";
       setError(message);
     } finally {
-      setIsTicketLoading(false);
+      setLoadingTicketId(null);
     }
   };
 
@@ -115,7 +115,7 @@ export function useTickets() {
     selectedTicket,
     setSelectedTicket,
     isLoading,
-    isTicketLoading,
+    loadingTicketId,
     isSubmitting,
     error,
     fetchTickets,

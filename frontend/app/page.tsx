@@ -26,6 +26,7 @@ export default function HomePage() {
     selectedTicket,
     setSelectedTicket,
     isLoading: ticketsLoading,
+    loadingTicketId,
     isSubmitting,
     fetchTickets,
     selectTicket,
@@ -125,6 +126,7 @@ export default function HomePage() {
               isLoading={ticketsLoading}
               onSelectTicket={selectTicket}
               selectedTicketId={selectedTicket?.id}
+              loadingTicketId={loadingTicketId}
               isTecnico={isTecnico}
             />
           </div>

@@ -5,13 +5,14 @@ import { Chamado, StatusChamado } from "@/lib/types";
 import { StatusBadge, PriorityBadge, SecurityRiskBadge, CategoryBadge } from "./ui/Badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/Card";
 import { Button } from "./ui/Button";
-import { ShieldAlert, Search, Filter, Clock, ChevronRight, Inbox, CalendarDays } from "lucide-react";
+import { ShieldAlert, Search, Filter, Clock, ChevronRight, Inbox, CalendarDays, Loader2 } from "lucide-react";
 
 interface TicketListProps {
   tickets: Chamado[];
   isLoading: boolean;
   onSelectTicket: (id: string) => void;
   selectedTicketId?: string;
+  loadingTicketId?: string | null;
   isTecnico: boolean;
 }
 
@@ -25,7 +26,14 @@ const STATUS_CONFIG: { key: StatusChamado | "ALL"; label: string }[] = [
   { key: "RESOLVIDO", label: "Resolvido" },
 ];
 
-export function TicketList({ tickets, isLoading, onSelectTicket, selectedTicketId, isTecnico }: TicketListProps) {
+export function TicketList({
+  tickets,
+  isLoading,
+  onSelectTicket,
+  selectedTicketId,
+  loadingTicketId,
+  isTecnico,
+}: TicketListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [dateFrom, setDateFrom] = useState("");
@@ -187,14 +195,15 @@ export function TicketList({ tickets, isLoading, onSelectTicket, selectedTicketI
             {filteredTickets.map((ticket) => {
               const isSelected = ticket.id === selectedTicketId;
               const hasSecurityThreat = ticket.risco_seguranca;
+              const isThisTicketLoading = loadingTicketId === ticket.id;
 
               return (
                 <div
                   key={ticket.id}
-                  onClick={() => onSelectTicket(ticket.id)}
-                  className={`p-4 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 ${
-                    isSelected ? "bg-blue-50/70 border-l-4 border-[#1E40AF]" : ""
-                  } ${
+                  onClick={() => !isThisTicketLoading && onSelectTicket(ticket.id)}
+                  className={`p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 ${
+                    isThisTicketLoading ? "opacity-70 cursor-wait" : "cursor-pointer"
+                  } ${isSelected ? "bg-blue-50/70 border-l-4 border-[#1E40AF]" : ""} ${
                     hasSecurityThreat && !isSelected && ticket.status !== "RESOLVIDO"
                       ? "border-l-4 border-l-[#DC2626] bg-red-50/20"
                       : ""
@@ -232,10 +241,20 @@ export function TicketList({ tickets, isLoading, onSelectTicket, selectedTicketI
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-xs text-[#1E40AF] hover:text-[#1D4ED8] gap-1 p-1 h-auto"
+                      disabled={isThisTicketLoading}
+                      className="text-xs text-[#1E40AF] hover:text-[#1D4ED8] gap-1 p-1 h-auto disabled:opacity-100"
                     >
-                      <span>Ver detalhes</span>
-                      <ChevronRight className="w-4 h-4" />
+                      {isThisTicketLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-[#1E40AF]" />
+                          <span className="text-[#1E40AF] font-medium">Abrindo...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Ver detalhes</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
