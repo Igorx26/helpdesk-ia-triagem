@@ -17,7 +17,9 @@ import {
   Sparkles,
   ArrowRight,
   Lock,
+  Loader2,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TicketDetailModalProps {
   ticket: Chamado;
@@ -44,19 +46,19 @@ export function TicketDetailModal({
 }: TicketDetailModalProps) {
   const [novaMensagem, setNovaMensagem] = useState<string>("");
   const [isSendingMessage, setIsSendingMessage] = useState<boolean>(false);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState<boolean>(false);
+  const [pendingStatus, setPendingStatus] = useState<StatusChamado | null>(null);
   const [activeTab, setActiveTab] = useState<"chat" | "auditoria">("chat");
 
   const handleStatusChange = async (newStatus: StatusChamado): Promise<void> => {
-    if (newStatus === ticket.status) return;
-    setIsUpdatingStatus(true);
+    if (newStatus === ticket.status || pendingStatus !== null) return;
+    setPendingStatus(newStatus);
     try {
       await onUpdateStatus(ticket.id, newStatus);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro ao mudar status";
       alert(message);
     } finally {
-      setIsUpdatingStatus(false);
+      setPendingStatus(null);
     }
   };
 
@@ -133,13 +135,27 @@ export function TicketDetailModal({
               <div className="flex flex-wrap gap-2">
                 {STATUS_LIST.map((st) => {
                   const isCurrent = ticket.status === st.key;
+                  const isPending = pendingStatus === st.key;
+                  const isLocked = pendingStatus !== null;
                   return (
                     <button
                       key={st.key}
-                      onClick={() => handleStatusChange(st.key)}
-                      disabled={isUpdatingStatus || isCurrent}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${isCurrent ? "bg-[#1E40AF] text-white shadow-xs cursor-default ring-2 ring-blue-400/30" : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400"}`}
+                      type="button"
+                      onClick={() => void handleStatusChange(st.key)}
+                      disabled={isLocked || isCurrent}
+                      aria-busy={isPending}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-100 active:scale-95",
+                        isCurrent
+                          ? "bg-[#1E40AF] text-white shadow-xs cursor-default ring-2 ring-blue-400/30"
+                          : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400",
+                        isPending && "border-[#1E40AF] text-[#1E40AF] bg-blue-50",
+                        isLocked && !isPending && !isCurrent && "opacity-50",
+                        (isLocked || isCurrent) && "cursor-not-allowed active:scale-100",
+                        isCurrent && "cursor-default"
+                      )}
                     >
+                      {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />}
                       {st.label} {isCurrent && "✓"}
                     </button>
                   );
