@@ -2,11 +2,37 @@
 
 Um sistema de Helpdesk moderno, desenvolvido para simplificar o suporte técnico corporativo e acelerar o tempo de resposta a incidentes. Com o auxílio de uma Inteligência Artificial integrada, a complexidade técnica é abstraída do usuário final, enquanto a equipe de TI obtém métricas automáticas de prioridade e risco.
 
+> 🚀 **Aplicação em Produção:** [https://helpdesk-ia-triagem.vercel.app](https://helpdesk-ia-triagem.vercel.app)
+
+---
+
+## 📸 Visão Geral do Sistema
+
+### Console Operacional e Fila de Triagem
+
+![Console Operacional de Suporte](docs/assets/console_operacional.png)
+_Visão do técnico de TI com alertas de segurança e categorização automática._
+
+### Gestão de Usuários (Invite-Only)
+
+![Painel de Gestão de Usuários](docs/assets/gestao_de_usuarios.png)
+_Controle de acesso restrito (RBAC) onde administradores gerenciam a criação e as permissões de novas contas._
+
+### Abertura de Chamado Simplificada
+
+![Formulário de Abertura de Chamado](docs/assets/abertura_de_chamado.png)
+_O usuário relata o problema em linguagem natural; a IA do Gemini se encarrega de definir a prioridade e a categoria._
+
+### Autenticação Corporativa
+
+![Tela de Login do Helpdesk](docs/assets/tela_de_login.png)
+_Acesso seguro garantindo que apenas colaboradores autorizados utilizem o sistema._
+
 ---
 
 ## 🤖 Desenvolvimento Assistido por IA (AI-Assisted Engineering)
 
-Este projeto foi desenvolvido utilizando uma abordagem vanguardista de engenharia de software, onde atuei como **Arquiteto de Software e Product Manager**, orquestrando **Agentes Autônomos de Codificação (Antigravity e Gemini API)** para a execução e implementação do código.
+Este projeto foi desenvolvido utilizando uma abordagem vanguardista de engenharia de software, onde atuei como **Arquiteto de Software e Product Manager**, orquestrando **Agentes Autônomos de Codificação (Antigravity diretamente no VS Code e Gemini API)** para a execução e implementação do código.
 
 O fluxo de desenvolvimento consistiu nas seguintes etapas operacionais:
 
@@ -30,14 +56,16 @@ O fluxo de desenvolvimento consistiu nas seguintes etapas operacionais:
 
 ## Stack Tecnológica
 
-| Componente           | Tecnologia                          |
-| -------------------- | ----------------------------------- |
-| **Frontend**         | React, Next.js (App Router)         |
-| **Estilização**      | Tailwind CSS, `shadcn/ui`, Lucide Icons |
-| **Backend**          | NestJS, TypeScript, JWT (Auth)      |
-| **Banco de Dados**   | PostgreSQL                          |
-| **ORM**              | Prisma                              |
-| **Inteligência Art.**| Google Gemini API (`gemini-3.8-flash`) |
+| Componente            | Tecnologia                                                                        |
+| --------------------- | --------------------------------------------------------------------------------- |
+| **Frontend**          | React, Next.js (App Router)                                                       |
+| **Estilização**       | Tailwind CSS, `shadcn/ui`, Lucide Icons                                           |
+| **Backend**           | NestJS, TypeScript, JWT (Auth)                                                    |
+| **Banco de Dados**    | PostgreSQL                                                                        |
+| **ORM**               | Prisma                                                                            |
+| **Inteligência Art.** | Google Gemini API (`gemini-3.8-flash`)                                            |
+| **Ferramenta de IA**  | **Antigravity diretamente no VS Code** (Pair Programming)                         |
+| **Deploy / Produção** | Vercel ([helpdesk-ia-triagem.vercel.app](https://helpdesk-ia-triagem.vercel.app)) |
 
 ---
 
@@ -133,7 +161,7 @@ SUPER_ADMIN_PASSWORD=sua_senha_segura_de_producao
 ```
 
 **3.4 Opcional: Popular base (Seed) de Superusuário ADMIN:**
-*(O seed cria automaticamente a conta admin@empresa.com / admin123)*
+_(O seed cria automaticamente a conta admin@empresa.com / admin123)_
 
 ```bash
 npx prisma db seed
@@ -234,19 +262,19 @@ helpdesk_com_ia/
 
 ## API – Endpoints Principais
 
-| Método  | Rota                               | Perfil Restrito       | Descrição                                 |
-| ------- | ---------------------------------- | --------------------- | ----------------------------------------- |
-| `POST`  | `/api/v1/auth/login`               | Público               | Autenticação – retorna `access_token` JWT   |
-| `GET`   | `/api/v1/users/me`                 | Autenticado           | Dados da própria sessão logada              |
-| `PATCH` | `/api/v1/users/me`                 | Autenticado           | Atualizar nome, e-mail e redefinir senha    |
-| `POST`  | `/api/v1/users`                    | `TECNICO` ou `ADMIN`  | Criação Invite-Only de novas contas       |
-| `GET`   | `/api/v1/users`                    | `TECNICO` ou `ADMIN`  | Tabela paginada do quadro de funcionários |
-| `DELETE`| `/api/v1/users/:id`                | EXCLUSIVO `ADMIN`     | Desligamento/exclusão definitiva de contas  |
-| `POST`  | `/api/v1/tickets`                  | Autenticado           | Abre chamado (aciona IA & Throttler limit)|
-| `GET`   | `/api/v1/tickets`                  | Autenticado           | Lista chamados (Query filtrada por RBAC)  |
-| `GET`   | `/api/v1/tickets/:id`              | Autenticado           | Detalhes + interações + trila de log      |
-| `PATCH` | `/api/v1/tickets/:id/status`       | `TECNICO` ou `ADMIN`  | Transita ciclo de vida e grava log imutável |
-| `POST`  | `/api/v1/tickets/:id/interactions` | Autenticado           | Adiciona mensagem/interação               |
+| Método   | Rota                               | Perfil Restrito      | Descrição                                   |
+| -------- | ---------------------------------- | -------------------- | ------------------------------------------- |
+| `POST`   | `/api/v1/auth/login`               | Público              | Autenticação – retorna `access_token` JWT   |
+| `GET`    | `/api/v1/users/me`                 | Autenticado          | Dados da própria sessão logada              |
+| `PATCH`  | `/api/v1/users/me`                 | Autenticado          | Atualizar nome, e-mail e redefinir senha    |
+| `POST`   | `/api/v1/users`                    | `TECNICO` ou `ADMIN` | Criação Invite-Only de novas contas         |
+| `GET`    | `/api/v1/users`                    | `TECNICO` ou `ADMIN` | Tabela paginada do quadro de funcionários   |
+| `DELETE` | `/api/v1/users/:id`                | EXCLUSIVO `ADMIN`    | Desligamento/exclusão definitiva de contas  |
+| `POST`   | `/api/v1/tickets`                  | Autenticado          | Abre chamado (aciona IA & Throttler limit)  |
+| `GET`    | `/api/v1/tickets`                  | Autenticado          | Lista chamados (Query filtrada por RBAC)    |
+| `GET`    | `/api/v1/tickets/:id`              | Autenticado          | Detalhes + interações + trila de log        |
+| `PATCH`  | `/api/v1/tickets/:id/status`       | `TECNICO` ou `ADMIN` | Transita ciclo de vida e grava log imutável |
+| `POST`   | `/api/v1/tickets/:id/interactions` | Autenticado          | Adiciona mensagem/interação                 |
 
 ---
 
