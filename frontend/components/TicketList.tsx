@@ -150,18 +150,20 @@ export function TicketList({
         </div>
 
         {/* Linha 2 de filtros: botões de status com contagem */}
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 pt-2 pb-1 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x min-w-0">
+        <div className="-mx-4 sm:mx-0 pt-2 pb-1 flex items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-hide min-w-0">
           <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:block" />
-          {STATUS_CONFIG.map(({ key, label }) => {
+          {STATUS_CONFIG.map(({ key, label }, index) => {
             const count = countByStatus[key] ?? 0;
             const isActive = statusFilter === key;
+            const isFirst = index === 0;
+            const isLast = index === STATUS_CONFIG.length - 1;
             return (
               <button
                 key={key}
                 onClick={() => setStatusFilter(key)}
-                className={`shrink-0 snap-start px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
                   isActive ? "bg-[#1E40AF] text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-600"
-                }`}
+                } ${isFirst ? "ml-4 sm:ml-0" : ""} ${isLast ? "mr-4 sm:mr-0" : ""}`}
               >
                 {label}
                 {key !== "ALL" && (
