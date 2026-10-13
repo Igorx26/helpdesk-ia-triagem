@@ -106,7 +106,7 @@ export function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
               <label htmlFor="profile-senha" className="text-xs font-semibold text-slate-700">
                 Nova Senha <span className="text-slate-400 font-normal">(opcional)</span>
               </label>
-              <Input id="profile-senha" type="password" minLength={6} value={senha} onChange={(e) => setSenha(e.target.value)} className="h-10 text-sm" placeholder="Mínimo 6 caracteres" />
+              <Input id="profile-senha" type="password" minLength={8} value={senha} onChange={(e) => setSenha(e.target.value)} className="h-10 text-sm" placeholder="Mínimo 8 caracteres" />
             </div>
 
             <Button type="submit" className="w-full mt-4 h-10 text-sm" isLoading={isSubmitting}>

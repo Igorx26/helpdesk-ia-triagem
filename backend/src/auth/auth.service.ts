@@ -17,7 +17,7 @@ export class AuthService {
     const usuario = await this.usersService.findByEmail(dto.email);
 
     if (!usuario) {
-      // Mensagem genérica para não revelar se o e-mail e|iste no sistema
+      // Mensagem genérica para não revelar se o e-mail existe no sistema
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 

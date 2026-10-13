@@ -280,7 +280,7 @@ export function UserManagementModal({ isOpen, onClose }: UserManagementModalProp
                   <label htmlFor="mgmt-senha" className="text-xs font-semibold text-slate-700">
                     Senha {isEditing && <span className="text-slate-400 font-normal">(deixe em branco para não alterar)</span>}
                   </label>
-                  <Input id="mgmt-senha" type="password" required={!isEditing} minLength={6} value={senha} onChange={(e) => setSenha(e.target.value)} className="h-9 text-sm" placeholder="Mínimo 6 caracteres" />
+                  <Input id="mgmt-senha" type="password" required={!isEditing} minLength={8} value={senha} onChange={(e) => setSenha(e.target.value)} className="h-9 text-sm" placeholder="Mínimo 8 caracteres" />
                 </div>
 
                 <div className="space-y-1">

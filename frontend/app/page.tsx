@@ -9,7 +9,7 @@ import { TicketCreateForm } from "@/components/TicketCreateForm";
 import { TicketList } from "@/components/TicketList";
 import { TicketDetailModal } from "@/components/TicketDetailModal";
 import type { PerfilUsuario } from "@/lib/types";
-import { Shield, PlusCircle, RefreshCw } from "lucide-react";
+import { PlusCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 // --- Constantes --------------------------------------------------------------

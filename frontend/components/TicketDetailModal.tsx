@@ -5,7 +5,6 @@ import type { Chamado, StatusChamado } from "@/lib/types";
 import { StatusBadge, PriorityBadge, SecurityRiskBadge, CategoryBadge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Textarea } from "./ui/Input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/Card";
 import {
   X,
   Clock,
